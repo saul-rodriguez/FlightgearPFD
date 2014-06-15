@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/com.rodriguez.saul.flightgearpfd"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${packageName}.${activityClass}" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        <com.rodriguez.saul.flightgearpfd.MFD777View
+            android:id="@+id/myFDMView"
+            android:layout_weight="30"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"		
+		/>
+    </LinearLayout>
+    
+</RelativeLayout>
