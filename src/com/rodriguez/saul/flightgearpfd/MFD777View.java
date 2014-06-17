@@ -28,18 +28,20 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	float verticalSpeed;
 	float speed;
 	float altitude;
+	float heading;
 	
-	private final double pitchDistance = 75.0; //vertical distance in number of pixels per 10 degree pitch
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
 	Bitmap vs = null;
-	Bitmap marks = null;		
+	Bitmap marks = null;	
+	Bitmap compass = null;
 	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
 	Matrix vsMatrix;
 	Matrix marksMatrix;
+	Matrix compassMatrix;
 	
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -51,19 +53,21 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		horizontMatrix = new Matrix();
 		vsMatrix = new Matrix();
 		marksMatrix = new Matrix();
+		compassMatrix = new Matrix();
 		
-		scaleFactor = (float)0.5;
+		scaleFactor = (float)1.0;
 		mask = BitmapFactory.decodeResource(getResources(),R.drawable.mask);
 		horizont = BitmapFactory.decodeResource(getResources(), R.drawable.horizon);
 		vs = BitmapFactory.decodeResource(getResources(), R.drawable.vs);
 		marks = BitmapFactory.decodeResource(getResources(), R.drawable.speed_altitude);
-				
-		horizontRollAngle = 45;
-		horizontPitchAngle = 10;
-		speed = 200;
-		altitude = 12450;
-		verticalSpeed = 500;
+		compass = BitmapFactory.decodeResource(getResources(), R.drawable.heading);
 		
+		horizontRollAngle = 0;
+		horizontPitchAngle = 0;
+		speed = 200;
+		altitude = 12400;
+		verticalSpeed = 500;
+		heading = 0;
 	}
 
 	@Override
@@ -88,10 +92,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		centery = mheight/2;
 		
 		//Calculate the scale factor
-		int maskWidth = mask.getHeight();
+		int maskHeight = mask.getHeight();
 		
-		scaleFactor = (float)(mheight)/(float)maskWidth;
-		
+		//scaleFactor = (float) 1; //Only for test and new features
+		scaleFactor = (float)(mheight)/(float)maskHeight;
+				
 		//Draw the view
 		draw();
 		
@@ -130,8 +135,14 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         marksMatrix.reset();
         marksMatrix.postTranslate(-marks.getWidth()/2, -marks.getHeight()/2);
         marksMatrix.postScale(scaleFactor, scaleFactor);
-        marksMatrix.postTranslate(centerx+(int)(13*scaleFactor), centery);
+        marksMatrix.postTranslate(centerx+(int)(13*scaleFactor), centery + (int)(120*scaleFactor));
         
+        //Prepare compass
+        compassMatrix.reset();
+        compassMatrix.postTranslate(-compass.getWidth()/2, -compass.getHeight()/2 );
+        compassMatrix.postRotate(heading);
+        compassMatrix.postScale(scaleFactor, scaleFactor);
+        compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
 		//Lock the canvas and start drawin
         Canvas canvas = surfaceHolder.lockCanvas();
@@ -149,6 +160,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         
         
         canvas.drawBitmap(mask,maskMatrix,paint);
+        canvas.drawBitmap(compass, compassMatrix, paint);
         canvas.drawBitmap(marks, marksMatrix, paint);
         
         paint.setColor(Color.WHITE);
@@ -166,6 +178,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	double calculatePitchshift()
 	{
 		double aux;
+
+		final double pitchDistance = 75.0; //vertical distance in number of pixels per 10 degree pitch
 		
 		aux = horizontPitchAngle*(pitchDistance/10.0);
 		return aux;
