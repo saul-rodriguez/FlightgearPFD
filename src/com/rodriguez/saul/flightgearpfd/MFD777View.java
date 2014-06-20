@@ -66,7 +66,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		horizontPitchAngle = 0;
 		speed = 200;
 		altitude = 12400;
-		verticalSpeed = 500;
+		verticalSpeed = -1600;
 		heading = 0;
 	}
 
@@ -140,7 +140,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         //Prepare compass
         compassMatrix.reset();
         compassMatrix.postTranslate(-compass.getWidth()/2, -compass.getHeight()/2 );
-        compassMatrix.postRotate(heading);
+        compassMatrix.postRotate(-heading);
         compassMatrix.postScale(scaleFactor, scaleFactor);
         compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
@@ -266,24 +266,54 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		int x1,x2,y1,y2;
 		Paint paint;
 		
-		float scaleVs = (float) (180./3000.); //180 pixels / 3000 kfpm (Full-scale +-180 pixels)
-				
+		//float scaleVs = (float) (180./3000.); //180 pixels / 3000 fpm (Full-scale +-180 pixels)
+		final float scaleVs = (float) (120./2000.); //180 pixels / 3000 fpm (Full-scale +-180 pixels)
+			
+		final float scaleVsTop = (float) (60./4000.); //The scale at top/bottom is 60 pixels / 4000 fpm
+		
 		//x1 = centerx + 475; //right border
 		x1 = centerx + (int)(550*scaleFactor); //right point
 		x2 = centerx + (int)(435*scaleFactor); //
 		y1 = centery;
+		y2 = centery;
 		
 		//Calculation of line deviation
-		y2 = centery - (int)(verticalSpeed*scaleVs*scaleFactor);
+		if (verticalSpeed <= 2000 && verticalSpeed >= -2000) {
+			y2 = centery - (int)(verticalSpeed*scaleVs*scaleFactor);
+		} else if (verticalSpeed > 2000 && verticalSpeed <= 6000) {
+			float aux = verticalSpeed - 2000;
+			y2 = centery -(int)(2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor); 
+		} else if (verticalSpeed > 6000) {
+			float aux = 6000 - 2000; //Limit vertical speed indicator to fullscale at 6000 fpm
+			y2 = centery -(int)(2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+		} else if(verticalSpeed < -2000 && verticalSpeed >= -6000) {
+			float aux = verticalSpeed + 2000;
+			y2 = centery -(int)(-2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+		} else if(verticalSpeed < -6000) {
+			float aux = -6000 + 2000; //Limit vertical speed indicator to fullscale at -6000 fpm
+			y2 = centery -(int)(-2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+		}
+				
 		
 		paint = new Paint();
 		paint.setAntiAlias(true);
 		paint.setDither(true);
 		paint.setColor(Color.WHITE);
-		//paint.setTextSize(30);
+		paint.setTextSize(24);	
 		paint.setStrokeWidth(3);
+		
+		//Draw VS indicator line
 		canvas.drawLine(x1, y1, x2, y2, paint);
 		
+		//Draw VS text
+		String vspeed = String.format("%d", (int)Math.abs(verticalSpeed));
+		int x3 = centerx + (int)(420*scaleFactor);
+		
+		if (verticalSpeed > 500) {		
+			canvas.drawText(vspeed, x3, (centery - (int)(210*scaleFactor)), paint);
+		} else if (verticalSpeed < -500) {
+			canvas.drawText(vspeed, x3, (centery + (int)(220*scaleFactor)), paint);
+		}
 	}
 	
 	void SetSpeed(float newSpeed) 
@@ -309,6 +339,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setPitch(float newPitch)
 	{
 		horizontPitchAngle = newPitch;
+	}
+	
+	void setHeading(float newHeading)
+	{
+		heading = newHeading;		
 	}
 	
 }

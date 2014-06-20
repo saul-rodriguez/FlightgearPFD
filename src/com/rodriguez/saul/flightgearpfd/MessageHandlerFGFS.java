@@ -34,7 +34,7 @@ public class MessageHandlerFGFS {
 	public static final int VS = 2; //vertical speed (rate of climb) in fpm (needs to be transformed to fps!)
 	public static final int PITCH = 3; //pitch angle degrees
 	public static final int ROLL = 4; //roll angle in degrees	
-	
+	public static final int HEADING = 5; // heading in degrees
 	
 	public int getInt(int i) 
 	{

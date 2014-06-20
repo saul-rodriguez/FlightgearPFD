@@ -189,6 +189,7 @@ public class PanelView extends Activity {
 				mMFD777.setVerticalSpeed(values[0].getFloat(MessageHandlerFGFS.VS));
 				mMFD777.setPitch(values[0].getFloat(MessageHandlerFGFS.PITCH));
 				mMFD777.setRoll(values[0].getFloat(MessageHandlerFGFS.ROLL));
+				mMFD777.setHeading((float)values[0].getInt(MessageHandlerFGFS.HEADING));
 				
 				mMFD777.draw();
 				

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<PropertyList>
+
+ <generic>
+
+  <output>
+   <line_separator>newline</line_separator>
+   <var_separator>:</var_separator>
+
+   <chunk>
+    <name>speed</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/airspeed-indicator/indicated-speed-kt</node>
+   </chunk>
+
+   <chunk>
+    <name>altitude</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/altimeter/indicated-altitude-ft</node>
+   </chunk>
+   
+   <chunk>
+    <name>rate of climb</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/vertical-speed-indicator/indicated-speed-fpm</node>
+   </chunk>
+
+   <chunk>
+    <name>pitch angle</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/orientation/pitch-deg</node>
+   </chunk>
+
+   <chunk>
+    <name>Roll angle</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/orientation/roll-deg</node>
+   </chunk>
+
+   <chunk>
+    <name>heading</name>
+    <format>%03d</format>
+    <node>/orientation/heading-deg</node>
+   </chunk>
+
+  </output>
+
+ </generic>
+
+</PropertyList>
