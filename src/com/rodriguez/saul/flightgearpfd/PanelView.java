@@ -132,7 +132,7 @@ public class PanelView extends Activity {
 						socket.receive(p);
 						pd.parse(new String(p.getData()));
 						
-						Log.d(MLOG,"pd parsed");
+						//Log.d(MLOG,"pd parsed");
 						
 						//Add here a call to progress with the pd as param
 						this.publishProgress(pd);
@@ -190,7 +190,13 @@ public class PanelView extends Activity {
 				mMFD777.setPitch(values[0].getFloat(MessageHandlerFGFS.PITCH));
 				mMFD777.setRoll(values[0].getFloat(MessageHandlerFGFS.ROLL));
 				mMFD777.setHeading((float)values[0].getInt(MessageHandlerFGFS.HEADING));
-				
+				mMFD777.setNAV1Quality(values[0].getFloat(MessageHandlerFGFS.NAV1QUALITY));
+				mMFD777.setNAV1loc(values[0].getBool(MessageHandlerFGFS.NAV1LOC));
+				mMFD777.setNAV1deflection((float)values[0].getFloat(MessageHandlerFGFS.NAV1DEF));
+				mMFD777.setGSActive(values[0].getBool(MessageHandlerFGFS.GSACTIVATED));
+				mMFD777.setGSInRange(values[0].getBool(MessageHandlerFGFS.GSINRANGE));
+				mMFD777.setGSdeflection((float)(values[0].getFloat(MessageHandlerFGFS.GSDEF)));
+												
 				mMFD777.draw();
 				
 				

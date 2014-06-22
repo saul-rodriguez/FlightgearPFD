@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -21,27 +22,36 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	int centerx;
 	int centery;
 	float scaleFactor;
-	
-	
+		
 	float horizontRollAngle;
 	float horizontPitchAngle;	
 	float verticalSpeed;
 	float speed;
 	float altitude;
 	float heading;
-	
+	float locnavQuality; //the localizer for ILS in range when > 0.9
+	boolean locnav;     //Is the localizer activated?
+	float headingLoc;   //Localizer deflection (normalized) -1.0 to 1.0
+	boolean gsInRange; //Is the glideslope in range?
+	boolean gsActive; //Is glidescope activated?
+	float gsDeflection; //Deflection of the glideslope normalizer (-1.0 to 1.0)
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
 	Bitmap vs = null;
 	Bitmap marks = null;	
 	Bitmap compass = null;
+	Bitmap bug = null;
+	Bitmap bugfilled = null;
+			
 	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
 	Matrix vsMatrix;
 	Matrix marksMatrix;
 	Matrix compassMatrix;
+	Matrix bugLocMatrix;
+	
 	
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -54,6 +64,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		vsMatrix = new Matrix();
 		marksMatrix = new Matrix();
 		compassMatrix = new Matrix();
+		bugLocMatrix = new Matrix();
 		
 		scaleFactor = (float)1.0;
 		mask = BitmapFactory.decodeResource(getResources(),R.drawable.mask);
@@ -61,6 +72,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		vs = BitmapFactory.decodeResource(getResources(), R.drawable.vs);
 		marks = BitmapFactory.decodeResource(getResources(), R.drawable.speed_altitude);
 		compass = BitmapFactory.decodeResource(getResources(), R.drawable.heading);
+		bug = BitmapFactory.decodeResource(getResources(), R.drawable.bug);
+		bugfilled = BitmapFactory.decodeResource(getResources(), R.drawable.bugfilled);
+		
 		
 		horizontRollAngle = 0;
 		horizontPitchAngle = 0;
@@ -68,13 +82,18 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		altitude = 12400;
 		verticalSpeed = -1600;
 		heading = 0;
+		locnavQuality = (float)0.95;
+		locnav = false;
+		headingLoc = (float)-0.97;
+		gsInRange = false; //Is the glideslope in range?
+		gsActive = false; //Is glidescope activated?
+		gsDeflection = (float)-0.90; //Deflection of the glideslope normalizer (-1.0 to 1.0)
+		
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		// TODO Auto-generated method stub
-		
-		
 		
 	}
 
@@ -94,7 +113,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		//Calculate the scale factor
 		int maskHeight = mask.getHeight();
 		
-		//scaleFactor = (float) 1; //Only for test and new features
+		//scaleFactor = (float) 0.5; //Only for test and new features
 		scaleFactor = (float)(mheight)/(float)maskHeight;
 				
 		//Draw the view
@@ -110,7 +129,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	public void draw() {
-				
+		
+		long time, time2;
+		time = System.currentTimeMillis();
+		
 		//Prepare the mask
 		maskMatrix.reset();
 		maskMatrix.postTranslate(-mask.getWidth()/2, -mask.getHeight()/2 );
@@ -144,20 +166,21 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         compassMatrix.postScale(scaleFactor, scaleFactor);
         compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
+        
+        
 		//Lock the canvas and start drawin
         Canvas canvas = surfaceHolder.lockCanvas();
         
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
-        paint.setDither(true);
+        //paint.setDither(true);
         //paint.setColor(Color.BLUE);
         canvas.drawColor(Color.WHITE);       
         canvas.drawBitmap(horizont, horizontMatrix, paint);
         canvas.drawBitmap(vs, vsMatrix, null);
         drawAltitudeLine(canvas);
         drawSpeedLine(canvas);
-        
         
         canvas.drawBitmap(mask,maskMatrix,paint);
         canvas.drawBitmap(compass, compassMatrix, paint);
@@ -169,10 +192,14 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(310*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         
         drawVerticalSpeed(canvas);
+        drawLocalizer(canvas);
+        drawGlideslope(canvas);
         
         surfaceHolder.unlockCanvasAndPost(canvas);
-
-		
+        
+        time2 = System.currentTimeMillis();
+  		Log.d("777View", String.format("%d", (time2-time)));
+       
 	}
 
 	double calculatePitchshift()
@@ -193,10 +220,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 		paint = new Paint();
 		paint.setAntiAlias(true);
-		paint.setDither(true);
+		//paint.setDither(true);
 		paint.setColor(Color.WHITE);
 		paint.setTextSize((int)(30*scaleFactor));
-		paint.setStrokeWidth(2);
+		paint.setStrokeWidth((int)(2*scaleFactor));
 		
 		//Calculate first horizontal line
 		int rest = (int)(altitude)%200; //residual to 1st lower mark in ft
@@ -231,10 +258,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			
 			paint = new Paint();
 			paint.setAntiAlias(true);
-			paint.setDither(true);
+			//paint.setDither(true);
 			paint.setColor(Color.WHITE);
 			paint.setTextSize(30*scaleFactor);
-			paint.setStrokeWidth(2);
+			paint.setStrokeWidth((int)(2*scaleFactor));
 			
 			//Calculate first horizontal line
 			int rest = (int)(speed)%20; //residual to 1st lower mark in kts
@@ -297,10 +324,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 		paint = new Paint();
 		paint.setAntiAlias(true);
-		paint.setDither(true);
+		//paint.setDither(true);
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(24);	
-		paint.setStrokeWidth(3);
+		paint.setStrokeWidth((int)(3*scaleFactor));
 		
 		//Draw VS indicator line
 		canvas.drawLine(x1, y1, x2, y2, paint);
@@ -314,6 +341,135 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		} else if (verticalSpeed < -500) {
 			canvas.drawText(vspeed, x3, (centery + (int)(220*scaleFactor)), paint);
 		}
+	}
+	
+	void drawLocalizer(Canvas canvas)
+	{
+		final int lineLenght = 20; 	
+		
+		//Check if the localizer is selected and in range
+		if ((locnavQuality < 0.93) || locnav == false) { 
+			return;
+		}
+		
+		
+		Paint paint;
+		paint = new Paint();
+		paint.setAntiAlias(true);
+		//paint.setDither(true);
+        paint.setFilterBitmap(true);	    		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setColor(Color.WHITE);			
+		paint.setStrokeWidth((int)(3*scaleFactor));
+		
+		//Draw center line line
+		canvas.drawLine(centerx, centery + (int)(230.*scaleFactor), centerx, centery + (int)(255.*scaleFactor), paint);
+				
+		int y2 = centery + (int)(240*scaleFactor);  
+		
+		if (headingLoc >= -0.33 && headingLoc <= 0.33) {
+			
+			final int side = 10;
+			
+			canvas.drawRect(centerx - (int)((-113-side)*scaleFactor), y2 - (int)(side*scaleFactor), centerx - (int)((-113+side)*scaleFactor), y2 + (int)(side*scaleFactor), paint);
+			canvas.drawRect(centerx + (int)((-113-side)*scaleFactor), y2 - (int)(side*scaleFactor), centerx + (int)((-113+side)*scaleFactor), y2 + (int)(side*scaleFactor), paint);
+			
+			int deflectionx = centerx + (int)(3.*226.*headingLoc*scaleFactor);
+			
+			bugLocMatrix.reset();
+			bugLocMatrix.postTranslate(-bug.getWidth()/2, -bug.getHeight()/2);
+			bugLocMatrix.postScale(scaleFactor, scaleFactor);
+			bugLocMatrix.postTranslate(deflectionx, y2);
+			
+			canvas.drawBitmap(bugfilled, bugLocMatrix, paint);
+			
+			
+		} else if (headingLoc <= -0.95 || headingLoc >= 0.95) { // Draw the empty bug close to the borders
+			
+			canvas.drawCircle(centerx - (int)(75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx - (int)(2*75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx + (int)(75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx + (int)(2*75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			
+			//Calculation of the deflection
+			int deflectionx = centerx + (int)(226.*headingLoc*scaleFactor);
+			
+			bugLocMatrix.reset();
+			bugLocMatrix.postTranslate(-bug.getWidth()/2, -bug.getHeight()/2);
+			bugLocMatrix.postScale(scaleFactor, scaleFactor);
+			bugLocMatrix.postTranslate(deflectionx, y2);
+			
+			canvas.drawBitmap(bug, bugLocMatrix, paint);
+			
+			
+		} else if (headingLoc > -0.95 && headingLoc < 0.95) { // Draw normal bug
+			canvas.drawCircle(centerx - (int)(75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx - (int)(2*75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx + (int)(75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			canvas.drawCircle(centerx + (int)(2*75.33*scaleFactor), y2 , (int)(10*scaleFactor), paint);
+			
+			//Calculation of the deflection
+			int deflectionx = centerx + (int)(226.*headingLoc*scaleFactor);
+			
+			bugLocMatrix.reset();
+			bugLocMatrix.postTranslate(-bug.getWidth()/2, -bug.getHeight()/2);
+			bugLocMatrix.postScale(scaleFactor, scaleFactor);
+			bugLocMatrix.postTranslate(deflectionx, y2);
+			
+			canvas.drawBitmap(bugfilled, bugLocMatrix, paint);
+			
+		}		
+	}
+	
+	void drawGlideslope(Canvas canvas)
+	{
+		//Check if the glidescope is activated and in range
+		if (gsActive == false || gsInRange == false)
+		{
+			return;			
+		}
+				
+		int offsetx;
+		
+		offsetx = centerx + (int)(235*scaleFactor); //Border
+		
+		Paint paint;
+		paint = new Paint();
+		paint.setAntiAlias(true);
+		//paint.setDither(true);
+        paint.setFilterBitmap(true);	    		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setColor(Color.WHITE);			
+		paint.setStrokeWidth((int)(3*scaleFactor));
+		
+		//Draw center line line
+		//canvas.drawLine(centerx, centery + (int)(230.*scaleFactor), centerx, centery + (int)(255.*scaleFactor), paint);
+		canvas.drawLine(offsetx, centery, offsetx + (int)(25.*scaleFactor), centery, paint);
+		
+		canvas.drawCircle(offsetx+(int)(12*scaleFactor), centery - (int)(75.33*scaleFactor), (int)(10*scaleFactor), paint);
+		canvas.drawCircle(offsetx+(int)(12*scaleFactor), centery - (int)(2*75.33*scaleFactor), (int)(10*scaleFactor), paint);
+		canvas.drawCircle(offsetx+(int)(12*scaleFactor), centery + (int)(75.33*scaleFactor), (int)(10*scaleFactor), paint);
+		canvas.drawCircle(offsetx+(int)(12*scaleFactor), centery + (int)(2*75.33*scaleFactor), (int)(10*scaleFactor), paint);
+		
+		
+		int deflectiony = centery - (int)(226.*gsDeflection*scaleFactor);
+		
+		bugLocMatrix.reset();
+		bugLocMatrix.postTranslate(-bug.getWidth()/2, -bug.getHeight()/2);
+		bugLocMatrix.postRotate((float)90);
+		bugLocMatrix.postScale(scaleFactor, scaleFactor);
+		bugLocMatrix.postTranslate(offsetx + (int)(12*scaleFactor), deflectiony);
+		
+		if (gsDeflection <= -0.95 || gsDeflection >= 0.95) { // Draw the empty bug close to the borders
+			
+			canvas.drawBitmap(bug, bugLocMatrix, paint);
+			
+		} else if (gsDeflection > -0.95 && gsDeflection < 0.95) { // Draw normal bug
+			
+			canvas.drawBitmap(bugfilled, bugLocMatrix, paint);
+		}		
+		
+		
 	}
 	
 	void SetSpeed(float newSpeed) 
@@ -344,6 +500,36 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setHeading(float newHeading)
 	{
 		heading = newHeading;		
+	}
+	
+	void setNAV1Quality(float newQuality)
+	{
+		locnavQuality = newQuality;
+	}
+	
+	void setNAV1loc(boolean newNavLoc)
+	{
+		locnav = newNavLoc;		
+	}
+	
+	void setNAV1deflection(float newDeflection)
+	{
+		headingLoc = newDeflection;
+	}
+	
+	void setGSActive(boolean newGSactive)
+	{
+		gsActive = newGSactive;		
+	}
+	
+	void setGSInRange(boolean newgsInRange)
+	{
+		gsInRange = newgsInRange;		
+	}
+	
+	void setGSdeflection(float newgsDeflection)
+	{
+		gsDeflection = newgsDeflection;
 	}
 	
 }

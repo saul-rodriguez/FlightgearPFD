@@ -49,6 +49,45 @@
     <node>/orientation/heading-deg</node>
    </chunk>
 
+   <chunk>
+    <name>NAV1 quality signal</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/signal-quality-norm</node>
+   </chunk>
+
+   <chunk>
+    <name>NAV1 localizer present </name>
+    <type>bool</type>
+    <node>/instrumentation/nav/nav-loc</node>
+   </chunk>
+
+   <chunk>
+    <name>Nav1 heading deflection </name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/heading-needle-deflection-norm</node>
+   </chunk>	
+
+   <chunk>
+    <name>Glideslope activated</name>
+    <type>bool</type>
+    <node>/instrumentation/nav/has-gs</node>
+   </chunk>
+
+   <chunk>
+    <name>Glideslope in range</name>
+    <type>bool</type>
+    <node>/instrumentation/nav/gs-in-range</node>
+   </chunk>
+
+   <chunk>
+    <name>Glideslope deflection </name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/gs-needle-deflection-norm</node>
+   </chunk>
+
   </output>
 
  </generic>

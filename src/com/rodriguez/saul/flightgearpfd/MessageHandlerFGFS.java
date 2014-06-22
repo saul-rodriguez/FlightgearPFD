@@ -26,7 +26,7 @@ public class MessageHandlerFGFS {
 		// just read the last data. If throws IndexOutOfBounds, the
 		// other extreme is sending wrong data
 				
-		getFloat(ROLL);
+		getFloat(GSDEF);
 	}
 	
 	public static final int SPEED = 0; // speed, in knots
@@ -35,6 +35,12 @@ public class MessageHandlerFGFS {
 	public static final int PITCH = 3; //pitch angle degrees
 	public static final int ROLL = 4; //roll angle in degrees	
 	public static final int HEADING = 5; // heading in degrees
+	public static final int NAV1QUALITY = 6; // is a selected NAV localizer in range? 
+	public static final int NAV1LOC = 7; //is the selected NAV present?
+	public static final int NAV1DEF = 8; // NAV1 normalizedr deflection (-1 to 1)
+	public static final int GSACTIVATED = 9; // is the glideslope activated?
+	public static final int GSINRANGE = 10; // is the glideslope in range?
+	public static final int GSDEF = 11; // glideslope normalized deflection (-1 to 1)
 	
 	public int getInt(int i) 
 	{
