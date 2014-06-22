@@ -43,7 +43,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	Bitmap compass = null;
 	Bitmap bug = null;
 	Bitmap bugfilled = null;
-			
+	Bitmap crophorizont = null;	
 	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
@@ -80,7 +80,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		horizontPitchAngle = 0;
 		speed = 200;
 		altitude = 12400;
-		verticalSpeed = -1600;
+		verticalSpeed = 500;
 		heading = 0;
 		locnavQuality = (float)0.95;
 		locnav = false;
@@ -140,12 +140,13 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         maskMatrix.postTranslate(centerx, centery);
         
         //Prepare the artificial horizont
+        /*
         horizontMatrix.reset();
         horizontMatrix.postTranslate(-horizont.getWidth()/2, (-horizont.getHeight()/2 + (float)calculatePitchshift()) );
         horizontMatrix.postRotate(horizontRollAngle);
         horizontMatrix.postScale(scaleFactor, scaleFactor);
         horizontMatrix.postTranslate(centerx, centery);
-        
+        */
         
         //Prepare vertical speed and gray background
         vsMatrix.reset();
@@ -166,6 +167,19 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         compassMatrix.postScale(scaleFactor, scaleFactor);
         compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
+       //Prepare artificial horizont Alternative Code
+        int aux_x = horizont.getWidth()/2;
+        int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
+        
+        crophorizont = Bitmap.createBitmap(horizont,aux_x - 300, aux_y - 300, 600, 600);
+        
+        horizontMatrix.reset();
+        horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2);
+        horizontMatrix.postRotate(horizontRollAngle);
+        horizontMatrix.postScale(scaleFactor, scaleFactor);
+        horizontMatrix.postTranslate(centerx, centery);
+        
+        
         
         
 		//Lock the canvas and start drawin
@@ -175,9 +189,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         //paint.setDither(true);
-        //paint.setColor(Color.BLUE);
-        canvas.drawColor(Color.WHITE);       
-        canvas.drawBitmap(horizont, horizontMatrix, paint);
+        canvas.drawColor(Color.BLACK);       
+        //canvas.drawBitmap(horizont, horizontMatrix, paint);
+        canvas.drawBitmap(crophorizont, horizontMatrix, paint);
         canvas.drawBitmap(vs, vsMatrix, null);
         drawAltitudeLine(canvas);
         drawSpeedLine(canvas);
@@ -189,7 +203,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(35*scaleFactor));
         canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(380*scaleFactor)), centery + (int)(10*scaleFactor), paint);
-        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(310*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(315*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         
         drawVerticalSpeed(canvas);
         drawLocalizer(canvas);
@@ -299,7 +313,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		final float scaleVsTop = (float) (60./4000.); //The scale at top/bottom is 60 pixels / 4000 fpm
 		
 		//x1 = centerx + 475; //right border
-		x1 = centerx + (int)(550*scaleFactor); //right point
+		x1 = centerx + (int)(525*scaleFactor); //right point
 		x2 = centerx + (int)(435*scaleFactor); //
 		y1 = centery;
 		y2 = centery;
@@ -307,18 +321,23 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		//Calculation of line deviation
 		if (verticalSpeed <= 2000 && verticalSpeed >= -2000) {
 			y2 = centery - (int)(verticalSpeed*scaleVs*scaleFactor);
+			y1 = centery - (int)(0.5*verticalSpeed*scaleVs*scaleFactor);
 		} else if (verticalSpeed > 2000 && verticalSpeed <= 6000) {
 			float aux = verticalSpeed - 2000;
 			y2 = centery -(int)(2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor); 
+			y1 = centery -(int)(0.5*2000.*scaleVs*scaleFactor) -(int)(0.5*aux*scaleVsTop*scaleFactor);
 		} else if (verticalSpeed > 6000) {
 			float aux = 6000 - 2000; //Limit vertical speed indicator to fullscale at 6000 fpm
 			y2 = centery -(int)(2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+			y1 = centery -(int)(0.5*2000.*scaleVs*scaleFactor) -(int)(0.5*aux*scaleVsTop*scaleFactor);
 		} else if(verticalSpeed < -2000 && verticalSpeed >= -6000) {
 			float aux = verticalSpeed + 2000;
 			y2 = centery -(int)(-2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+			y1 = centery -(int)(-0.5*2000.*scaleVs*scaleFactor) -(int)(0.5*aux*scaleVsTop*scaleFactor);
 		} else if(verticalSpeed < -6000) {
 			float aux = -6000 + 2000; //Limit vertical speed indicator to fullscale at -6000 fpm
 			y2 = centery -(int)(-2000.*scaleVs*scaleFactor) -(int)(aux*scaleVsTop*scaleFactor);
+			y1 = centery -(int)(-0.5*2000.*scaleVs*scaleFactor) -(int)(0.5*aux*scaleVsTop*scaleFactor);
 		}
 				
 		
