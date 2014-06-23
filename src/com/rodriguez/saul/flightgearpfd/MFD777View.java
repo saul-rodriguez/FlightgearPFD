@@ -35,6 +35,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	boolean gsInRange; //Is the glideslope in range?
 	boolean gsActive; //Is glidescope activated?
 	float gsDeflection; //Deflection of the glideslope normalizer (-1.0 to 1.0)
+	int radioaltimeter; //radioaltimeter feet;
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -76,7 +77,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		bugfilled = BitmapFactory.decodeResource(getResources(), R.drawable.bugfilled);
 		
 		
-		horizontRollAngle = 0;
+		horizontRollAngle = 40;
 		horizontPitchAngle = 0;
 		speed = 200;
 		altitude = 12400;
@@ -88,6 +89,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		gsInRange = false; //Is the glideslope in range?
 		gsActive = false; //Is glidescope activated?
 		gsDeflection = (float)-0.90; //Deflection of the glideslope normalizer (-1.0 to 1.0)
+		radioaltimeter = 10;
 		
 	}
 
@@ -179,6 +181,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         horizontMatrix.postScale(scaleFactor, scaleFactor);
         horizontMatrix.postTranslate(centerx, centery);
         
+        //Prepare Match Speed (lower match)
+        float match = (float) (speed*0.0015118);
         
         
         
@@ -202,8 +206,12 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(35*scaleFactor));
+        
+        //drat speed kts, match, altitude, and radioaltimeter
         canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(380*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%4.3f",match), (centerx - (int)(370*scaleFactor)), centery + (int)(280*scaleFactor), paint);
         canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(315*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        drawRadioAltimeter(canvas);
         
         drawVerticalSpeed(canvas);
         drawLocalizer(canvas);
@@ -345,7 +353,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		paint.setAntiAlias(true);
 		//paint.setDither(true);
 		paint.setColor(Color.WHITE);
-		paint.setTextSize(24);	
+		paint.setTextSize(24*scaleFactor);	
 		paint.setStrokeWidth((int)(3*scaleFactor));
 		
 		//Draw VS indicator line
@@ -487,8 +495,38 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			
 			canvas.drawBitmap(bugfilled, bugLocMatrix, paint);
 		}		
+				
+	}
+	
+	void drawRadioAltimeter(Canvas canvas)
+	{
+		if (radioaltimeter > 2400) {
+			return;
+		}
+		Paint paint = new Paint();
+		paint.setAntiAlias(true);
+		//paint.setDither(true);
+		paint.setColor(Color.BLACK);
+		canvas.drawRect(centerx - (int)(50*scaleFactor), centery + (int)(180*scaleFactor) , centerx + (int)(50*scaleFactor), centery + (int)(220*scaleFactor), paint);
 		
+		paint.setColor(Color.WHITE);
+		paint.setTextSize(35*scaleFactor);	
+		paint.setStrokeWidth((int)(3*scaleFactor));
 		
+		int offset = 0;
+		radioaltimeter /= 10;
+		radioaltimeter *=10;
+		
+		if (radioaltimeter < 1000)
+			offset += (int)(10*scaleFactor);
+		
+		if (radioaltimeter < 100)
+			offset += (int)(10*scaleFactor);
+		
+		if (radioaltimeter < 10)
+			offset += (int)(10*scaleFactor);
+		
+		canvas.drawText(String.format("%d",radioaltimeter), centerx - (int)(42*scaleFactor) + offset , centery + (int)(215*scaleFactor), paint);
 	}
 	
 	void SetSpeed(float newSpeed) 
@@ -549,6 +587,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setGSdeflection(float newgsDeflection)
 	{
 		gsDeflection = newgsDeflection;
+	}
+	
+	void setRadioaltimeter(int newRadioaltimeter)
+	{
+		radioaltimeter = newRadioaltimeter;		
 	}
 	
 }

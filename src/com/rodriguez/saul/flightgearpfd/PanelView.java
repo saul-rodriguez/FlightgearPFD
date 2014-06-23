@@ -68,6 +68,7 @@ public class PanelView extends Activity {
 			Log.d(MLOG, "Pausing threads");
 			
 			if (udpReceiver != null) {
+				 
 			     udpReceiver.cancel(true); 
 			     udpReceiver = null;
 			}
@@ -196,6 +197,7 @@ public class PanelView extends Activity {
 				mMFD777.setGSActive(values[0].getBool(MessageHandlerFGFS.GSACTIVATED));
 				mMFD777.setGSInRange(values[0].getBool(MessageHandlerFGFS.GSINRANGE));
 				mMFD777.setGSdeflection((float)(values[0].getFloat(MessageHandlerFGFS.GSDEF)));
+				mMFD777.setRadioaltimeter(values[0].getInt(MessageHandlerFGFS.RADIOALTIMETER));
 												
 				mMFD777.draw();
 				

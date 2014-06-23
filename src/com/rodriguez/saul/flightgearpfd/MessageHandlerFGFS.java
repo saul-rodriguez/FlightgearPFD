@@ -26,7 +26,7 @@ public class MessageHandlerFGFS {
 		// just read the last data. If throws IndexOutOfBounds, the
 		// other extreme is sending wrong data
 				
-		getFloat(GSDEF);
+		getFloat(RADIOALTIMETER);
 	}
 	
 	public static final int SPEED = 0; // speed, in knots
@@ -41,6 +41,7 @@ public class MessageHandlerFGFS {
 	public static final int GSACTIVATED = 9; // is the glideslope activated?
 	public static final int GSINRANGE = 10; // is the glideslope in range?
 	public static final int GSDEF = 11; // glideslope normalized deflection (-1 to 1)
+	public static final int RADIOALTIMETER = 12; // ground altitude in feet (int)
 	
 	public int getInt(int i) 
 	{
