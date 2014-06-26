@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014  Saul Rodriguez
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
+
 package com.rodriguez.saul.flightgearpfd;
 
 import java.net.DatagramPacket;
@@ -190,7 +209,7 @@ public class PanelView extends Activity {
 				mMFD777.setVerticalSpeed(values[0].getFloat(MessageHandlerFGFS.VS));
 				mMFD777.setPitch(values[0].getFloat(MessageHandlerFGFS.PITCH));
 				mMFD777.setRoll(values[0].getFloat(MessageHandlerFGFS.ROLL));
-				mMFD777.setHeading((float)values[0].getInt(MessageHandlerFGFS.HEADING));
+				mMFD777.setHeading(values[0].getFloat(MessageHandlerFGFS.HEADING));
 				mMFD777.setNAV1Quality(values[0].getFloat(MessageHandlerFGFS.NAV1QUALITY));
 				mMFD777.setNAV1loc(values[0].getBool(MessageHandlerFGFS.NAV1LOC));
 				mMFD777.setNAV1deflection((float)values[0].getFloat(MessageHandlerFGFS.NAV1DEF));
@@ -198,6 +217,7 @@ public class PanelView extends Activity {
 				mMFD777.setGSInRange(values[0].getBool(MessageHandlerFGFS.GSINRANGE));
 				mMFD777.setGSdeflection((float)(values[0].getFloat(MessageHandlerFGFS.GSDEF)));
 				mMFD777.setRadioaltimeter(values[0].getInt(MessageHandlerFGFS.RADIOALTIMETER));
+				mMFD777.setMach(values[0].getFloat(MessageHandlerFGFS.MACHSPEED));
 												
 				mMFD777.draw();
 				

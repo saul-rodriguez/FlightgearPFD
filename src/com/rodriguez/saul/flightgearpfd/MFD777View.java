@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2014  Saul Rodriguez
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
+
+
 package com.rodriguez.saul.flightgearpfd;
 
 import android.content.Context;
@@ -36,6 +56,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	boolean gsActive; //Is glidescope activated?
 	float gsDeflection; //Deflection of the glideslope normalizer (-1.0 to 1.0)
 	int radioaltimeter; //radioaltimeter feet;
+	float mach; 		//mach speed
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -90,6 +111,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		gsActive = false; //Is glidescope activated?
 		gsDeflection = (float)-0.90; //Deflection of the glideslope normalizer (-1.0 to 1.0)
 		radioaltimeter = 10;
+		mach = 0;
 		
 	}
 
@@ -132,8 +154,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void draw() {
 		
-		long time, time2;
-		time = System.currentTimeMillis();
+		//long time, time2;
+		//time = System.currentTimeMillis();
 		
 		//Prepare the mask
 		maskMatrix.reset();
@@ -182,9 +204,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         horizontMatrix.postTranslate(centerx, centery);
         
         //Prepare Match Speed (lower match)
-        float match = (float) (speed*0.0015118);
-        
-        
+        //float match = (float) (speed*0.0015118);
+            
         
 		//Lock the canvas and start drawin
         Canvas canvas = surfaceHolder.lockCanvas();
@@ -207,9 +228,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(35*scaleFactor));
         
-        //drat speed kts, match, altitude, and radioaltimeter
+        //draw speed kts, match, altitude, and radioaltimeter
         canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(380*scaleFactor)), centery + (int)(10*scaleFactor), paint);
-        canvas.drawText(String.format("%4.3f",match), (centerx - (int)(370*scaleFactor)), centery + (int)(280*scaleFactor), paint);
+        canvas.drawText(String.format("%4.3f",mach), (centerx - (int)(370*scaleFactor)), centery + (int)(280*scaleFactor), paint);
         canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(315*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         drawRadioAltimeter(canvas);
         
@@ -219,8 +240,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
-        time2 = System.currentTimeMillis();
-  		Log.d("777View", String.format("%d", (time2-time)));
+        //time2 = System.currentTimeMillis();
+  		//Log.d("777View", String.format("%d", (time2-time)));
        
 	}
 
@@ -248,9 +269,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		paint.setStrokeWidth((int)(2*scaleFactor));
 		
 		//Calculate first horizontal line
+		float frest = altitude - 200*(int)((altitude)/200); //float residual
+		
 		int rest = (int)(altitude)%200; //residual to 1st lower mark in ft
 		int altitude1 = (int)(altitude) - rest; // altitude in feet 1st lower mark
-		int offset1 = (int) (rest*(verticalPitchScale*scaleFactor));
+		int offset1 = (int) (frest*(verticalPitchScale*scaleFactor));
 		int y1 = centery + offset1;
 		
 		int y[] = new int[6];
@@ -285,10 +308,12 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			paint.setTextSize(30*scaleFactor);
 			paint.setStrokeWidth((int)(2*scaleFactor));
 			
+						
 			//Calculate first horizontal line
+			float frest = speed - 20*(int)((speed)/20); //float residual
 			int rest = (int)(speed)%20; //residual to 1st lower mark in kts
 			int speed1 = (int)(speed) - rest; // speed in kts of 1st lower mark
-			int offset1 = (int) (rest*verticalPitchScale*scaleFactor);
+			int offset1 = (int) (frest*verticalPitchScale*scaleFactor);
 			int y1 = centery + offset1;
 			
 			int y[] = new int[8];
@@ -592,6 +617,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setRadioaltimeter(int newRadioaltimeter)
 	{
 		radioaltimeter = newRadioaltimeter;		
+	}
+	
+	void setMach(float newMach)
+	{
+		mach = newMach;
 	}
 	
 }

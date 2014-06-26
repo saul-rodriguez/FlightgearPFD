@@ -45,7 +45,8 @@
 
    <chunk>
     <name>heading</name>
-    <format>%03d</format>
+    <type>float</type>
+    <format>%f</format>
     <node>/orientation/heading-deg</node>
    </chunk>
 
@@ -86,6 +87,19 @@
     <type>float</type>
     <format>%f</format>
     <node>/instrumentation/nav/gs-needle-deflection-norm</node>
+   </chunk>
+
+   <chunk>
+    <name>radio altimeter</name>
+    <format>%05d</format>
+    <node>/position/altitude-agl-ft</node>
+   </chunk>
+ 
+   <chunk>
+    <name>Mach speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/airspeed-indicator/indicated-mach</node>
    </chunk>
 
   </output>

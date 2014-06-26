@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2014  Saul Rodriguez
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    
+    NOTE: this class is a modified version of GPL code available at https://github.com/Juanvvc/FlightGearMap
+ * 
+ */
+
+
 package com.rodriguez.saul.flightgearpfd;
 
 import java.util.Date;
@@ -26,7 +47,7 @@ public class MessageHandlerFGFS {
 		// just read the last data. If throws IndexOutOfBounds, the
 		// other extreme is sending wrong data
 				
-		getFloat(RADIOALTIMETER);
+		getFloat(MACHSPEED);
 	}
 	
 	public static final int SPEED = 0; // speed, in knots
@@ -42,6 +63,7 @@ public class MessageHandlerFGFS {
 	public static final int GSINRANGE = 10; // is the glideslope in range?
 	public static final int GSDEF = 11; // glideslope normalized deflection (-1 to 1)
 	public static final int RADIOALTIMETER = 12; // ground altitude in feet (int)
+	public static final int MACHSPEED = 13; // mach speed, ground referred?
 	
 	public int getInt(int i) 
 	{
