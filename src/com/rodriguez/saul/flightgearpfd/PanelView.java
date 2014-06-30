@@ -218,6 +218,8 @@ public class PanelView extends Activity {
 				mMFD777.setGSdeflection((float)(values[0].getFloat(MessageHandlerFGFS.GSDEF)));
 				mMFD777.setRadioaltimeter(values[0].getInt(MessageHandlerFGFS.RADIOALTIMETER));
 				mMFD777.setMach(values[0].getFloat(MessageHandlerFGFS.MACHSPEED));
+				mMFD777.setStallSpeed(values[0].getFloat(MessageHandlerFGFS.STALLSPEED));
+				
 												
 				mMFD777.draw();
 				

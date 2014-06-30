@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -57,6 +58,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	float gsDeflection; //Deflection of the glideslope normalizer (-1.0 to 1.0)
 	int radioaltimeter; //radioaltimeter feet;
 	float mach; 		//mach speed
+	float stallspeed;  //min speed
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -112,6 +114,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		gsDeflection = (float)-0.90; //Deflection of the glideslope normalizer (-1.0 to 1.0)
 		radioaltimeter = 10;
 		mach = 0;
+		stallspeed = 185;
 		
 	}
 
@@ -154,8 +157,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void draw() {
 		
-		//long time, time2;
-		//time = System.currentTimeMillis();
+		long time, time2;
+		time = System.currentTimeMillis();
 		
 		//Prepare the mask
 		maskMatrix.reset();
@@ -237,11 +240,12 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         drawVerticalSpeed(canvas);
         drawLocalizer(canvas);
         drawGlideslope(canvas);
+        drawMinMaxSpeed(canvas);
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
-        //time2 = System.currentTimeMillis();
-  		//Log.d("777View", String.format("%d", (time2-time)));
+        time2 = System.currentTimeMillis();
+  		Log.d("777View", String.format("%d", (time2-time)));
        
 	}
 
@@ -333,8 +337,44 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 				y[i] = y1 - (int)(((75*4+37) - i*75)*scaleFactor); 
 				canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);			
 			}		
+			
+			
 	}
 		
+	void drawMinMaxSpeed(Canvas canvas)
+	{
+		int offsetx = centerx - (int)(267*scaleFactor); //Border
+		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
+		// Draw stall speed
+		
+		if ((speed - stallspeed) > 50) 
+			return;
+		
+		float ystall = (speed + 10 - stallspeed)*verticalPitchScale*scaleFactor; 
+		Paint paint;
+		paint = new Paint();
+		paint.setAntiAlias(true);
+		paint.setColor(Color.RED);
+		paint.setStrokeWidth((10*scaleFactor));
+		paint.setPathEffect(new DashPathEffect(new float[] {(8*scaleFactor),(15*scaleFactor)}, 0));
+		canvas.drawLine(offsetx, centery +  (int)ystall, offsetx, centery + (int)(240*scaleFactor) , paint);
+		
+		paint.setPathEffect(null);		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth((2*scaleFactor));
+		paint.setColor(Color.YELLOW);
+		
+		int x1 = offsetx - (int)(5*scaleFactor);
+		int y1 = centery + (int)ystall;
+		int x2 = offsetx + (int)(15*scaleFactor);
+		int y2 = centery + (int)(ystall - 37.5*scaleFactor);
+		
+		canvas.drawLine(x1, y1, x2, y1, paint);
+		canvas.drawLine(x2, y1, x2, y2, paint);
+		canvas.drawLine(x2, y2, x1, y2, paint);
+		
+	}
+	
 	void drawVerticalSpeed(Canvas canvas)
 	{
 		int x1,x2,y1,y2;
@@ -385,12 +425,13 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		canvas.drawLine(x1, y1, x2, y2, paint);
 		
 		//Draw VS text
-		String vspeed = String.format("%d", (int)Math.abs(verticalSpeed));
+		int auxvs = (int)(Math.abs(verticalSpeed)/100)*100;
+		String vspeed = String.format("%d", auxvs);
 		int x3 = centerx + (int)(420*scaleFactor);
 		
-		if (verticalSpeed > 500) {		
+		if (verticalSpeed > 400) {		
 			canvas.drawText(vspeed, x3, (centery - (int)(210*scaleFactor)), paint);
-		} else if (verticalSpeed < -500) {
+		} else if (verticalSpeed < -400) {
 			canvas.drawText(vspeed, x3, (centery + (int)(220*scaleFactor)), paint);
 		}
 	}
@@ -622,6 +663,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setMach(float newMach)
 	{
 		mach = newMach;
+	}
+	
+	void setStallSpeed(float newStallSpeed)
+	{
+		stallspeed = newStallSpeed; 
 	}
 	
 }

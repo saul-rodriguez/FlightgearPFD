@@ -47,7 +47,7 @@ public class MessageHandlerFGFS {
 		// just read the last data. If throws IndexOutOfBounds, the
 		// other extreme is sending wrong data
 				
-		getFloat(MACHSPEED);
+		getFloat(STALLSPEED);
 	}
 	
 	public static final int SPEED = 0; // speed, in knots
@@ -64,6 +64,7 @@ public class MessageHandlerFGFS {
 	public static final int GSDEF = 11; // glideslope normalized deflection (-1 to 1)
 	public static final int RADIOALTIMETER = 12; // ground altitude in feet (int)
 	public static final int MACHSPEED = 13; // mach speed, ground referred?
+	public static final int STALLSPEED = 14; // minimum speed
 	
 	public int getInt(int i) 
 	{
