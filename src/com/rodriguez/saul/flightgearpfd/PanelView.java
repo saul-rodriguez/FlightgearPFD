@@ -220,7 +220,9 @@ public class PanelView extends Activity {
 				mMFD777.setMach(values[0].getFloat(MessageHandlerFGFS.MACHSPEED));
 				mMFD777.setStallSpeed(values[0].getFloat(MessageHandlerFGFS.STALLSPEED));
 				mMFD777.setStallWarning(values[0].getBool(MessageHandlerFGFS.STALLWARNING));
-												
+				mMFD777.setFlaps(values[0].getFloat(MessageHandlerFGFS.FLAPS));
+				mMFD777.setMaxSpeed(values[0].getFloat(MessageHandlerFGFS.MAXSPEED));
+								
 				mMFD777.draw();
 				
 				

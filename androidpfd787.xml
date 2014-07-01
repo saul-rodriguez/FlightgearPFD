@@ -102,6 +102,33 @@
     <node>/instrumentation/airspeed-indicator/indicated-mach</node>
    </chunk>
 
+   <chunk>
+    <name>Stall speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/weu/state/stall-speed</node>
+   </chunk>
+
+   <chunk>
+    <name>Stall-speed indicator activated	</name>
+    <type>bool</type>
+    <node>/instrumentation/weu/state/stall-warning</node>
+   </chunk>
+
+   <chunk>
+    <name>Flaps status</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/controls/flight/flaps</node>
+   </chunk>
+
+   <chunk>
+    <name>Max speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/afds/max-airspeed-kts</node>
+   </chunk>
+
   </output>
 
  </generic>

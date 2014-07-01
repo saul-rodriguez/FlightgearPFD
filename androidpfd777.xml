@@ -115,6 +115,20 @@
     <node>/instrumentation/weu/state/stall-warning</node>
    </chunk>
 
+   <chunk>
+    <name>Flaps status</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/controls/flight/flaps</node>
+   </chunk>
+
+   <chunk>
+    <name>Max speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/afds/max-airspeed-kts</node>
+   </chunk>
+
   </output>
 
  </generic>

@@ -38,6 +38,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 
 	private SurfaceHolder surfaceHolder;
 	
+	public static final int B777 = 1;
+	public static final int A330 = 2;
+	int selectedPlane;
+	
 	int mwidth;
 	int mheight;	
 	int centerx;
@@ -60,6 +64,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	float mach; 		//mach speed
 	float stallspeed;  //min speed
 	boolean stallwarning; //turn on when stallspeed is valid
+	float flaps; //flap status
+	float maxspeed; //maximum speed
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -80,10 +86,15 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		
+		//Select a plane
+		//selectedPlane = A330;
+		selectedPlane = B777;
+		
 		// TODO Auto-generated constructor stub
 		surfaceHolder = this.getHolder();
 		surfaceHolder.addCallback(this);
-		
+				
 		maskMatrix = new Matrix();
 		horizontMatrix = new Matrix();
 		vsMatrix = new Matrix();
@@ -116,6 +127,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		radioaltimeter = 10;
 		mach = 0;
 		stallspeed = 185;
+		stallwarning = false;
+		flaps = 0;
+		maxspeed = 130;
 		
 	}
 
@@ -241,7 +255,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         drawVerticalSpeed(canvas);
         drawLocalizer(canvas);
         drawGlideslope(canvas);
-        drawMinMaxSpeed(canvas);
+        drawMinSpeed(canvas);
+        drawMaxSpeed(canvas);
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
@@ -342,15 +357,25 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			
 	}
 		
-	void drawMinMaxSpeed(Canvas canvas)
+	void drawMinSpeed(Canvas canvas)
 	{
 		int offsetx = centerx - (int)(267*scaleFactor); //Border
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
 		// Draw stall speed
 		
-		//Stall-speed indicator inactive
-		if (stallwarning == false) 
-			return;
+		if (selectedPlane == B777) {
+			//Stall-speed indicator inactive
+			if (stallwarning == false) 
+				return;
+									
+		} else if (selectedPlane == A330) {
+			if (radioaltimeter < 40) {
+				return;
+			} else {
+				stallspeed = 140;
+			}
+		}
+		
 		
 		//Stall speed to low to be shown
 		if ((speed - stallspeed) > 50) 
@@ -360,6 +385,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		if ((stallspeed - speed) > 70) 
 			stallspeed = speed + 70;
 			
+		
 		float ystall = (speed + 10 - stallspeed)*verticalPitchScale*scaleFactor; 
 		
 		Paint paint;
@@ -379,6 +405,61 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		int y1 = centery + (int)ystall;
 		int x2 = offsetx + (int)(15*scaleFactor);
 		int y2 = centery + (int)(ystall - 37.5*scaleFactor);
+		
+		canvas.drawLine(x1, y1, x2, y1, paint);
+		canvas.drawLine(x2, y1, x2, y2, paint);
+		canvas.drawLine(x2, y2, x1, y2, paint);
+		
+	}
+	
+	void drawMaxSpeed(Canvas canvas)
+	{
+		int offsetx = centerx - (int)(267*scaleFactor); //Border
+		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
+		
+		
+		if (selectedPlane == A330) {
+		 
+			maxspeed = 330; //No flaps
+			if (flaps >= 0.28)
+				maxspeed = 230;
+			if (flaps >= 0.596)
+				maxspeed = 215;
+			if (flaps >= 0.745)
+				maxspeed = 200;
+			if (flaps >= 1)
+				maxspeed = 185;	
+		}
+			
+		
+		
+		//Max speed too high to be shown
+		if ((maxspeed - speed) > 55) 
+			return;
+				
+		//Max speed too low to be shown
+		if ((speed - maxspeed) > 60) 
+			maxspeed = speed - 60;
+		
+		float ystall = (maxspeed - speed + 10)*verticalPitchScale*scaleFactor;
+		
+		Paint paint;
+		paint = new Paint();
+		paint.setAntiAlias(true);
+		paint.setColor(Color.RED);
+		paint.setStrokeWidth((10*scaleFactor));
+		paint.setPathEffect(new DashPathEffect(new float[] {(8*scaleFactor),(15*scaleFactor)}, 0));
+		canvas.drawLine(offsetx, centery -  (int)ystall, offsetx, centery - (int)(255*scaleFactor) , paint);
+		
+		paint.setPathEffect(null);		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth((2*scaleFactor));
+		paint.setColor(Color.YELLOW);
+		
+		int x1 = offsetx - (int)(5*scaleFactor);
+		int y1 = centery - (int)ystall;
+		int x2 = offsetx + (int)(15*scaleFactor);
+		int y2 = centery - (int)(ystall - 37.5*scaleFactor);
 		
 		canvas.drawLine(x1, y1, x2, y1, paint);
 		canvas.drawLine(x2, y1, x2, y2, paint);
@@ -684,6 +765,16 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setStallWarning(boolean newStallWarning)
 	{
 		stallwarning = newStallWarning;		
+	}
+	
+	void setFlaps(float newFlaps)
+	{
+		flaps = newFlaps;
+	}
+	
+	void setMaxSpeed(float newMaxSpeed)
+	{
+		maxspeed = newMaxSpeed;
 	}
 	
 }

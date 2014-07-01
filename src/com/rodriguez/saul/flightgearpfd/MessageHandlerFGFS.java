@@ -47,7 +47,7 @@ public class MessageHandlerFGFS {
 		// just read the last data. If throws IndexOutOfBounds, the
 		// other extreme is sending wrong data
 				
-		getFloat(STALLWARNING);
+		getFloat(MAXSPEED);
 	}
 	
 	public static final int SPEED = 0; // speed, in knots
@@ -66,6 +66,9 @@ public class MessageHandlerFGFS {
 	public static final int MACHSPEED = 13; // mach speed, ground referred?
 	public static final int STALLSPEED = 14; // minimum speed
 	public static final int STALLWARNING = 15; // minimum speed
+	public static final int FLAPS = 16; //flap status (float)
+	public static final int MAXSPEED = 17; //flap status (float)
+	
 	
 	public int getInt(int i) 
 	{
