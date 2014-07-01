@@ -102,6 +102,19 @@
     <node>/instrumentation/airspeed-indicator/indicated-mach</node>
    </chunk>
 
+   <chunk>
+    <name>Stall speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/weu/state/stall-speed</node>
+   </chunk>
+
+   <chunk>
+    <name>Stall-speed indicator activated	</name>
+    <type>bool</type>
+    <node>/instrumentation/weu/state/stall-warning</node>
+   </chunk>
+
   </output>
 
  </generic>

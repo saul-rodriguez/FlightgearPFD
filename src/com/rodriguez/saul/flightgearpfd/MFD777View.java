@@ -59,6 +59,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	int radioaltimeter; //radioaltimeter feet;
 	float mach; 		//mach speed
 	float stallspeed;  //min speed
+	boolean stallwarning; //turn on when stallspeed is valid
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -347,10 +348,20 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
 		// Draw stall speed
 		
+		//Stall-speed indicator inactive
+		if (stallwarning == false) 
+			return;
+		
+		//Stall speed to low to be shown
 		if ((speed - stallspeed) > 50) 
 			return;
 		
+		//Stall speed to high to be shown
+		if ((stallspeed - speed) > 70) 
+			stallspeed = speed + 70;
+			
 		float ystall = (speed + 10 - stallspeed)*verticalPitchScale*scaleFactor; 
+		
 		Paint paint;
 		paint = new Paint();
 		paint.setAntiAlias(true);
@@ -668,6 +679,11 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setStallSpeed(float newStallSpeed)
 	{
 		stallspeed = newStallSpeed; 
+	}
+	
+	void setStallWarning(boolean newStallWarning)
+	{
+		stallwarning = newStallWarning;		
 	}
 	
 }
