@@ -68,6 +68,7 @@ public class MessageHandlerFGFS {
 	public static final int STALLWARNING = 15; // minimum speed
 	public static final int FLAPS = 16; //flap status (float)
 	public static final int MAXSPEED = 17; //flap status (float)
+	public static final int AP = 18;
 	
 	
 	public int getInt(int i) 

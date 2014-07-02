@@ -130,7 +130,8 @@ public class PanelView extends Activity {
 			protected String doInBackground(Integer... params) {
 				// TODO Auto-generated method stub
 				DatagramSocket socket;
-				byte[] buf = new byte[512];
+				//byte[] buf = new byte[512];
+				byte[] buf = new byte[1024];
 				boolean canceled = false;
 				String msg = null;
 				MessageHandlerFGFS pd = new MessageHandlerFGFS();
@@ -222,7 +223,8 @@ public class PanelView extends Activity {
 				mMFD777.setStallWarning(values[0].getBool(MessageHandlerFGFS.STALLWARNING));
 				mMFD777.setFlaps(values[0].getFloat(MessageHandlerFGFS.FLAPS));
 				mMFD777.setMaxSpeed(values[0].getFloat(MessageHandlerFGFS.MAXSPEED));
-								
+				mMFD777.setApIndicator(values[0].getString(MessageHandlerFGFS.AP));	
+				
 				mMFD777.draw();
 				
 				

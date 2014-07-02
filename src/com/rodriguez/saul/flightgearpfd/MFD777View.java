@@ -66,6 +66,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	boolean stallwarning; //turn on when stallspeed is valid
 	float flaps; //flap status
 	float maxspeed; //maximum speed
+	String apIndicator; //Autopilot indicator
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -112,7 +113,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		bugfilled = BitmapFactory.decodeResource(getResources(), R.drawable.bugfilled);
 		
 		
-		horizontRollAngle = 40;
+		horizontRollAngle = 45;
 		horizontPitchAngle = 0;
 		speed = 200;
 		altitude = 12400;
@@ -130,7 +131,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		stallwarning = false;
 		flaps = 0;
 		maxspeed = 130;
-		
+		apIndicator = new String();
+		apIndicator = "A/P";
 	}
 
 	@Override
@@ -180,16 +182,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		maskMatrix.postTranslate(-mask.getWidth()/2, -mask.getHeight()/2 );
 		maskMatrix.postScale(scaleFactor, scaleFactor);
         maskMatrix.postTranslate(centerx, centery);
-        
-        //Prepare the artificial horizont
-        /*
-        horizontMatrix.reset();
-        horizontMatrix.postTranslate(-horizont.getWidth()/2, (-horizont.getHeight()/2 + (float)calculatePitchshift()) );
-        horizontMatrix.postRotate(horizontRollAngle);
-        horizontMatrix.postScale(scaleFactor, scaleFactor);
-        horizontMatrix.postTranslate(centerx, centery);
-        */
-        
+       
+               
         //Prepare vertical speed and gray background
         vsMatrix.reset();
         vsMatrix.postTranslate(-vs.getWidth()/2, -vs.getHeight()/2);
@@ -214,16 +208,13 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
         
         crophorizont = Bitmap.createBitmap(horizont,aux_x - 300, aux_y - 300, 600, 600);
-        
+                
         horizontMatrix.reset();
         horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2);
         horizontMatrix.postRotate(horizontRollAngle);
         horizontMatrix.postScale(scaleFactor, scaleFactor);
         horizontMatrix.postTranslate(centerx, centery);
-        
-        //Prepare Match Speed (lower match)
-        //float match = (float) (speed*0.0015118);
-            
+                           
         
 		//Lock the canvas and start drawin
         Canvas canvas = surfaceHolder.lockCanvas();
@@ -236,8 +227,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         //canvas.drawBitmap(horizont, horizontMatrix, paint);
         canvas.drawBitmap(crophorizont, horizontMatrix, paint);
         canvas.drawBitmap(vs, vsMatrix, null);
-        drawAltitudeLine(canvas);
-        drawSpeedLine(canvas);
+        drawAltitudeLine(canvas,paint);
+        drawSpeedLine(canvas,paint);
         
         canvas.drawBitmap(mask,maskMatrix,paint);
         canvas.drawBitmap(compass, compassMatrix, paint);
@@ -250,13 +241,14 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(380*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         canvas.drawText(String.format("%4.3f",mach), (centerx - (int)(370*scaleFactor)), centery + (int)(280*scaleFactor), paint);
         canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(315*scaleFactor)), centery + (int)(10*scaleFactor), paint);
-        drawRadioAltimeter(canvas);
-        
-        drawVerticalSpeed(canvas);
-        drawLocalizer(canvas);
-        drawGlideslope(canvas);
-        drawMinSpeed(canvas);
-        drawMaxSpeed(canvas);
+        drawRadioAltimeter(canvas, paint);
+                
+        drawVerticalSpeed(canvas,paint);
+        drawLocalizer(canvas,paint);
+        drawGlideslope(canvas,paint);
+        drawMinSpeed(canvas,paint);
+        drawMaxSpeed(canvas,paint);
+        drawAPStatus(canvas,paint);
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
@@ -275,14 +267,14 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		return aux;
 	}
 	
-	void drawAltitudeLine(Canvas canvas) {
+	void drawAltitudeLine(Canvas canvas, Paint paint) {
 		int offsetx;
-		Paint paint;
+		//Paint paint;
 		final float verticalPitchScale = (float) (100./200); // 100pixels/200 feet = 0.5 pixels/ft
 		offsetx = centerx + (int)(273*scaleFactor); //Border
 		
-		paint = new Paint();
-		paint.setAntiAlias(true);
+		//paint = new Paint();
+		//paint.setAntiAlias(true);
 		//paint.setDither(true);
 		paint.setColor(Color.WHITE);
 		paint.setTextSize((int)(30*scaleFactor));
@@ -315,14 +307,14 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 		
-	void drawSpeedLine(Canvas canvas) {
+	void drawSpeedLine(Canvas canvas, Paint paint) {
 			int offsetx;
-			Paint paint;
+			//Paint paint;
 			final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
 			offsetx = centerx - (int)(300*scaleFactor); //Border
 			
-			paint = new Paint();
-			paint.setAntiAlias(true);
+			//paint = new Paint();
+			//paint.setAntiAlias(true);
 			//paint.setDither(true);
 			paint.setColor(Color.WHITE);
 			paint.setTextSize(30*scaleFactor);
@@ -357,7 +349,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			
 	}
 		
-	void drawMinSpeed(Canvas canvas)
+	void drawMinSpeed(Canvas canvas, Paint paint)
 	{
 		int offsetx = centerx - (int)(267*scaleFactor); //Border
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
@@ -388,9 +380,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 		float ystall = (speed + 10 - stallspeed)*verticalPitchScale*scaleFactor; 
 		
-		Paint paint;
-		paint = new Paint();
-		paint.setAntiAlias(true);
+		//Paint paint;
+		//paint = new Paint();
+		//paint.setAntiAlias(true);
 		paint.setColor(Color.RED);
 		paint.setStrokeWidth((10*scaleFactor));
 		paint.setPathEffect(new DashPathEffect(new float[] {(8*scaleFactor),(15*scaleFactor)}, 0));
@@ -412,7 +404,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 	}
 	
-	void drawMaxSpeed(Canvas canvas)
+	void drawMaxSpeed(Canvas canvas, Paint paint)
 	{
 		int offsetx = centerx - (int)(267*scaleFactor); //Border
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
@@ -443,9 +435,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 		float ystall = (maxspeed - speed + 10)*verticalPitchScale*scaleFactor;
 		
-		Paint paint;
-		paint = new Paint();
-		paint.setAntiAlias(true);
+		//Paint paint;
+		//paint = new Paint();
+		//paint.setAntiAlias(true);
 		paint.setColor(Color.RED);
 		paint.setStrokeWidth((10*scaleFactor));
 		paint.setPathEffect(new DashPathEffect(new float[] {(8*scaleFactor),(15*scaleFactor)}, 0));
@@ -467,10 +459,10 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 	}
 	
-	void drawVerticalSpeed(Canvas canvas)
+	void drawVerticalSpeed(Canvas canvas, Paint paint)
 	{
 		int x1,x2,y1,y2;
-		Paint paint;
+		//Paint paint;
 		
 		//float scaleVs = (float) (180./3000.); //180 pixels / 3000 fpm (Full-scale +-180 pixels)
 		final float scaleVs = (float) (120./2000.); //180 pixels / 3000 fpm (Full-scale +-180 pixels)
@@ -506,7 +498,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		}
 				
 		
-		paint = new Paint();
+		//paint = new Paint();
 		paint.setAntiAlias(true);
 		//paint.setDither(true);
 		paint.setColor(Color.WHITE);
@@ -528,7 +520,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
-	void drawLocalizer(Canvas canvas)
+	void drawLocalizer(Canvas canvas, Paint paint)
 	{
 		final int lineLenght = 20; 	
 		
@@ -538,9 +530,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		
-		Paint paint;
-		paint = new Paint();
-		paint.setAntiAlias(true);
+		//Paint paint;
+		//paint = new Paint();
+		//paint.setAntiAlias(true);
 		//paint.setDither(true);
         paint.setFilterBitmap(true);	    		
 		paint.setStyle(Paint.Style.STROKE);
@@ -606,7 +598,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		}		
 	}
 	
-	void drawGlideslope(Canvas canvas)
+	void drawGlideslope(Canvas canvas, Paint paint)
 	{
 		//Check if the glidescope is activated and in range
 		if (gsActive == false || gsInRange == false)
@@ -618,9 +610,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		
 		offsetx = centerx + (int)(235*scaleFactor); //Border
 		
-		Paint paint;
-		paint = new Paint();
-		paint.setAntiAlias(true);
+		//Paint paint;
+		//paint = new Paint();
+		//paint.setAntiAlias(true);
 		//paint.setDither(true);
         paint.setFilterBitmap(true);	    		
 		paint.setStyle(Paint.Style.STROKE);
@@ -656,13 +648,13 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 				
 	}
 	
-	void drawRadioAltimeter(Canvas canvas)
+	void drawRadioAltimeter(Canvas canvas, Paint paint)
 	{
 		if (radioaltimeter > 2400) {
 			return;
 		}
-		Paint paint = new Paint();
-		paint.setAntiAlias(true);
+		//Paint paint = new Paint();
+		//paint.setAntiAlias(true);
 		//paint.setDither(true);
 		paint.setColor(Color.BLACK);
 		canvas.drawRect(centerx - (int)(50*scaleFactor), centery + (int)(180*scaleFactor) , centerx + (int)(50*scaleFactor), centery + (int)(220*scaleFactor), paint);
@@ -687,6 +679,18 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		canvas.drawText(String.format("%d",radioaltimeter), centerx - (int)(42*scaleFactor) + offset , centery + (int)(215*scaleFactor), paint);
 	}
 	
+	void drawAPStatus(Canvas canvas, Paint paint)
+	{
+		paint.setStyle(Paint.Style.FILL_AND_STROKE);
+		paint.setStrokeWidth((int)(1*scaleFactor));
+		paint.setPathEffect(null);
+		paint.setColor(Color.GREEN);
+		paint.setTextSize(35*scaleFactor);
+		canvas.drawText(apIndicator, centerx - (int)(25*scaleFactor), centery - (int)(240*scaleFactor), paint);
+	}
+	
+	
+	//Setters
 	void SetSpeed(float newSpeed) 
 	{
 		speed = newSpeed;
@@ -775,6 +779,12 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	void setMaxSpeed(float newMaxSpeed)
 	{
 		maxspeed = newMaxSpeed;
+	}
+	
+	void setApIndicator(String newApIndicator)
+	{
+		apIndicator = newApIndicator;
+		//Log.d("Saul",apIndicator);
 	}
 	
 }
