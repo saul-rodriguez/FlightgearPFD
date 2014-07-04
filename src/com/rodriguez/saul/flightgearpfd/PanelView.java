@@ -130,8 +130,8 @@ public class PanelView extends Activity {
 			protected String doInBackground(Integer... params) {
 				// TODO Auto-generated method stub
 				DatagramSocket socket;
-				//byte[] buf = new byte[512];
-				byte[] buf = new byte[1024];
+				byte[] buf = new byte[512];
+				
 				boolean canceled = false;
 				String msg = null;
 				MessageHandlerFGFS pd = new MessageHandlerFGFS();
@@ -184,27 +184,7 @@ public class PanelView extends Activity {
 			protected void onProgressUpdate(MessageHandlerFGFS... values) {
 				// TODO Auto-generated method stub
 				super.onProgressUpdate(values);
-				
-				/*
-				String aux; 
-				aux = "Speed: " + values[0].data[MessageHandlerFGFS.SPEED];						
-				//speed.setText(aux);
-				Log.d(MLOG,aux);
-				
-				aux = "Atitude: " + values[0].data[MessageHandlerFGFS.ALTITUDE];			
-				//altitude.setText(aux);
-				Log.d(MLOG,aux);
-				
-				aux = "Vertical Speed: " + values[0].data[MessageHandlerFGFS.VS];
-				Log.d(MLOG,aux);
-				
-				aux = "Pitch: " + values[0].data[MessageHandlerFGFS.PITCH];
-				Log.d(MLOG,aux);
-				
-				aux = "Roll: " + values[0].data[MessageHandlerFGFS.ROLL];
-				Log.d(MLOG,aux);
-				*/
-				
+											
 				mMFD777.SetSpeed(values[0].getFloat(MessageHandlerFGFS.SPEED));
 				mMFD777.setAltitude(values[0].getFloat(MessageHandlerFGFS.ALTITUDE));
 				mMFD777.setVerticalSpeed(values[0].getFloat(MessageHandlerFGFS.VS));
@@ -224,6 +204,13 @@ public class PanelView extends Activity {
 				mMFD777.setFlaps(values[0].getFloat(MessageHandlerFGFS.FLAPS));
 				mMFD777.setMaxSpeed(values[0].getFloat(MessageHandlerFGFS.MAXSPEED));
 				mMFD777.setApIndicator(values[0].getString(MessageHandlerFGFS.AP));	
+				mMFD777.setPitchMode(values[0].getString(MessageHandlerFGFS.PITCHMODE));
+				mMFD777.setRollMode(values[0].getString(MessageHandlerFGFS.ROLLMODE));
+				mMFD777.setSpeedMode(values[0].getString(MessageHandlerFGFS.SPEEDMODE));
+				mMFD777.setAPaltitude(values[0].getFloat(MessageHandlerFGFS.APALTITUDE));
+				mMFD777.setAPactualaltitude(values[0].getFloat(MessageHandlerFGFS.APACTUALALT));				
+				mMFD777.setAPspeed(values[0].getFloat(MessageHandlerFGFS.APSPEED));
+				mMFD777.setAPheading(values[0].getInt(MessageHandlerFGFS.APHEADING));				
 				
 				mMFD777.draw();
 				

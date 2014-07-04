@@ -23,6 +23,8 @@ package com.rodriguez.saul.flightgearpfd;
 
 import java.util.Date;
 
+import android.util.Log;
+
 public class MessageHandlerFGFS {
 	String[] data;
 	String[] outData;
@@ -68,8 +70,14 @@ public class MessageHandlerFGFS {
 	public static final int STALLWARNING = 15; // minimum speed
 	public static final int FLAPS = 16; //flap status (float)
 	public static final int MAXSPEED = 17; //flap status (float)
-	public static final int AP = 18;
-	
+	public static final int AP = 18; // autopilot status (Activated/deactivated)
+	public static final int PITCHMODE = 19; //AP Pitch conf. status
+	public static final int ROLLMODE = 20; //AP Roll conf. status
+	public static final int SPEEDMODE = 21; //AP Roll conf. status
+	public static final int APALTITUDE = 22; //AP set altitude
+	public static final int APACTUALALT = 23; //AP actual altitude
+	public static final int APSPEED = 24; // AP set speed
+	public static final int APHEADING = 25; // AP heading bug
 	
 	public int getInt(int i) 
 	{
@@ -98,6 +106,8 @@ public class MessageHandlerFGFS {
 		if (data == null) {
 			return "";
 		}
+//		Log.d("Saul getstring index", String.format("%d", i));
+//		Log.d("Saul getstring String: ",data[i]);
 		return data[i];
 	}
 

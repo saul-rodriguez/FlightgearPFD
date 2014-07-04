@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -67,6 +68,13 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	float flaps; //flap status
 	float maxspeed; //maximum speed
 	String apIndicator; //Autopilot indicator
+	String pitchMode; // status of AP pitch conf.
+	String rollMode; //  status of AP roll conf.
+	String speedMode; // Status of AP speed conf.
+	float apaltitude; // AP set altitude
+	float apactualaltitude; //AP actual/current altitude
+	float apspeed; // AP speed
+	int apheading; //AP heading bug
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -76,6 +84,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	Bitmap bug = null;
 	Bitmap bugfilled = null;
 	Bitmap crophorizont = null;	
+	Bitmap apalt = null;
+	Bitmap apspeedind = null;
+	Bitmap aphead = null;
 	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
@@ -83,7 +94,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	Matrix marksMatrix;
 	Matrix compassMatrix;
 	Matrix bugLocMatrix;
-	
+	Matrix apaltMatrix;
+	Matrix apspeedindMatrix;
+	Matrix apheadMatrix;
 	
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -102,6 +115,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		marksMatrix = new Matrix();
 		compassMatrix = new Matrix();
 		bugLocMatrix = new Matrix();
+		apaltMatrix = new Matrix();
+		apspeedindMatrix = new Matrix();
+		apheadMatrix = new Matrix();
 		
 		scaleFactor = (float)1.0;
 		mask = BitmapFactory.decodeResource(getResources(),R.drawable.mask);
@@ -111,6 +127,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		compass = BitmapFactory.decodeResource(getResources(), R.drawable.heading);
 		bug = BitmapFactory.decodeResource(getResources(), R.drawable.bug);
 		bugfilled = BitmapFactory.decodeResource(getResources(), R.drawable.bugfilled);
+		apalt = BitmapFactory.decodeResource(getResources(), R.drawable.apalt);
+		apspeedind = BitmapFactory.decodeResource(getResources(), R.drawable.apspeed);
+		aphead = BitmapFactory.decodeResource(getResources(), R.drawable.aphdg);
 		
 		
 		horizontRollAngle = 45;
@@ -118,7 +137,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		speed = 200;
 		altitude = 12400;
 		verticalSpeed = 500;
-		heading = 0;
+		heading = 10;
 		locnavQuality = (float)0.95;
 		locnav = false;
 		headingLoc = (float)-0.97;
@@ -131,8 +150,16 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		stallwarning = false;
 		flaps = 0;
 		maxspeed = 130;
-		apIndicator = new String();
-		apIndicator = "A/P";
+		apIndicator = new String("A/P");		
+		pitchMode = new String("V/S");
+		rollMode = new String("HDG HOLD");
+		speedMode = new String("A/T");
+		apaltitude = 12500;
+		apactualaltitude = 12800;
+		apspeed = 200;
+		apheading = 20; 
+		
+		
 	}
 
 	@Override
@@ -232,15 +259,17 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         
         canvas.drawBitmap(mask,maskMatrix,paint);
         canvas.drawBitmap(compass, compassMatrix, paint);
+        
+        drawAPsettings(canvas,paint);
         canvas.drawBitmap(marks, marksMatrix, paint);
         
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(35*scaleFactor));
         
         //draw speed kts, match, altitude, and radioaltimeter
-        canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(380*scaleFactor)), centery + (int)(10*scaleFactor), paint);
-        canvas.drawText(String.format("%4.3f",mach), (centerx - (int)(370*scaleFactor)), centery + (int)(280*scaleFactor), paint);
-        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(315*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(350*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%4.3f",mach), (centerx - (int)(340*scaleFactor)), centery + (int)(280*scaleFactor), paint);
+        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(365*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         drawRadioAltimeter(canvas, paint);
                 
         drawVerticalSpeed(canvas,paint);
@@ -249,6 +278,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         drawMinSpeed(canvas,paint);
         drawMaxSpeed(canvas,paint);
         drawAPStatus(canvas,paint);
+        
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
@@ -422,8 +452,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 			if (flaps >= 1)
 				maxspeed = 185;	
 		}
-			
-		
+				
 		
 		//Max speed too high to be shown
 		if ((maxspeed - speed) > 55) 
@@ -528,7 +557,6 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		if ((locnavQuality < 0.93) || locnav == false) { 
 			return;
 		}
-		
 		
 		//Paint paint;
 		//paint = new Paint();
@@ -662,6 +690,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(35*scaleFactor);	
 		paint.setStrokeWidth((int)(3*scaleFactor));
+		paint.setTextAlign(Align.CENTER);
 		
 		int offset = 0;
 		radioaltimeter /= 10;
@@ -676,7 +705,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		if (radioaltimeter < 10)
 			offset += (int)(10*scaleFactor);
 		
-		canvas.drawText(String.format("%d",radioaltimeter), centerx - (int)(42*scaleFactor) + offset , centery + (int)(215*scaleFactor), paint);
+		canvas.drawText(String.format("%d",radioaltimeter), centerx, centery + (int)(215*scaleFactor), paint);
 	}
 	
 	void drawAPStatus(Canvas canvas, Paint paint)
@@ -685,10 +714,114 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		paint.setStrokeWidth((int)(1*scaleFactor));
 		paint.setPathEffect(null);
 		paint.setColor(Color.GREEN);
+		paint.setTextAlign(Paint.Align.CENTER);
+		
+		//AP status
 		paint.setTextSize(35*scaleFactor);
-		canvas.drawText(apIndicator, centerx - (int)(25*scaleFactor), centery - (int)(240*scaleFactor), paint);
+		canvas.drawText(apIndicator, centerx, centery - (int)(240*scaleFactor), paint);
+		
+		
+		paint.setTextSize(30*scaleFactor);
+				
+		//Pitch Mode		
+		canvas.drawText(pitchMode, centerx + (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
+		
+		//Roll Mode
+		canvas.drawText(rollMode, centerx, centery - (int)(320*scaleFactor), paint);
+		
+		//Speed Mode
+		canvas.drawText(speedMode, centerx - (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
 	}
 	
+	void drawAPsettings(Canvas canvas, Paint paint)
+	{
+		int offsetx, offsety;
+		final float verticalPitchScale = (float) (100./200); // 100pixels/200 feet = 0.5 pixels/ft
+		final float verticalPitchScaleSpeed = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
+		
+		//Selected AP Altitude 
+		offsetx = centerx + (int)(330*scaleFactor); //Border
+		paint.setColor(Color.MAGENTA);
+		paint.setTextSize(35*scaleFactor);
+		paint.setTextAlign(Align.CENTER);
+				
+		canvas.drawText(String.format("%d",(int)apaltitude), offsetx, centery - (int)(270*scaleFactor), paint);
+		
+		//Actual AP Altitude
+		if ((apactualaltitude - altitude) > 500) { //Out of scale
+			apactualaltitude = altitude + 500;
+		}
+		
+		if ((altitude - apactualaltitude > 500)) {
+			apactualaltitude = altitude - 500;
+		}
+		
+		
+		offsetx = centerx + (int)(280*scaleFactor); //Border
+		offsety = centery - (int)((apactualaltitude - altitude)*verticalPitchScale*scaleFactor);   
+				
+		apaltMatrix.reset();
+		apaltMatrix.postTranslate(-apalt.getWidth()/2, -apalt.getHeight()/2);
+		apaltMatrix.postScale(scaleFactor, scaleFactor);
+		apaltMatrix.postTranslate(offsetx, offsety);
+		
+		canvas.drawBitmap(apalt, apaltMatrix, paint);
+		
+		//AP Speed Text
+		offsetx = centerx - (int)(330*scaleFactor); //Border
+		canvas.drawText(String.format("%d",(int)apspeed), offsetx, centery - (int)(270*scaleFactor), paint);
+		
+		//AP speed indicator
+		if ((apspeed - speed) > 70) {
+			apspeed = speed + 70;
+		}
+		
+		if ((speed - apspeed) > 65) {
+			apspeed = speed - 65;
+		}
+		
+		offsetx = centerx - (int)(270*scaleFactor); //Border
+		offsety = centery - (int)((apspeed - speed)*verticalPitchScaleSpeed*scaleFactor);
+		
+		apspeedindMatrix.reset();
+		apspeedindMatrix.postTranslate(-apspeedind.getWidth()/2, -apspeedind.getHeight()/2);
+		apspeedindMatrix.postScale(scaleFactor, scaleFactor);
+		apspeedindMatrix.postTranslate(offsetx, offsety);
+		
+		canvas.drawBitmap(apspeedind, apspeedindMatrix, paint);
+		
+		//AP Heading Text
+		offsetx = centerx - (int)(50*scaleFactor);
+		offsety = centery + (int)(360*scaleFactor);
+		paint.setTextSize(30*scaleFactor);
+		
+		if (apheading < 10) {
+			canvas.drawText(String.format("00%dH",apheading), offsetx, offsety, paint);
+		} else if (apheading < 100) {
+			canvas.drawText(String.format("0%dH",apheading), offsetx, offsety, paint);
+		} else {
+			canvas.drawText(String.format("%dH",apheading), offsetx, offsety, paint);
+		}
+		
+		
+		//AP Heading indicator
+		float rotation = heading - (float)(apheading);
+		
+		apheadMatrix.reset();
+		apheadMatrix.postTranslate(-aphead.getWidth()/2, -aphead.getHeight()/2);
+		apheadMatrix.postScale(scaleFactor, scaleFactor);
+		apheadMatrix.postTranslate(0, -(280*scaleFactor));
+		apheadMatrix.postRotate(-rotation);
+		
+		apheadMatrix.postTranslate(centerx,centery + (int)(548*scaleFactor));
+		
+		
+		canvas.drawBitmap(aphead, apheadMatrix, paint);
+		
+		
+		
+		
+	}
 	
 	//Setters
 	void SetSpeed(float newSpeed) 
@@ -785,6 +918,42 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	{
 		apIndicator = newApIndicator;
 		//Log.d("Saul",apIndicator);
+	}
+	
+	void setPitchMode(String newPitchMode)
+	{
+		pitchMode = newPitchMode;
+		//Log.d("Saul",pitchMode);
+	}
+	
+	void setRollMode(String newRoleMode)
+	{
+		rollMode = newRoleMode;
+	}
+	
+	void setSpeedMode(String newSpeedMode)
+	{
+		speedMode = newSpeedMode;
+	}
+	
+	void setAPaltitude(float newApAltitude)
+	{
+		apaltitude = newApAltitude;
+	}
+	
+	void setAPactualaltitude(float newAPactualaltitude)
+	{
+		apactualaltitude = newAPactualaltitude;
+	}
+	
+	void setAPspeed(float newAPspeed)
+	{
+		apspeed = newAPspeed;
+	}
+	
+	void setAPheading(int newAPheading)
+	{
+		apheading = newAPheading;		
 	}
 	
 }

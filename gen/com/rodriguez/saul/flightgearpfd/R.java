@@ -1076,14 +1076,17 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int bug=0x7f020057;
-        public static final int bugfilled=0x7f020058;
-        public static final int heading=0x7f020059;
-        public static final int horizon=0x7f02005a;
-        public static final int ic_launcher=0x7f02005b;
-        public static final int mask=0x7f02005c;
-        public static final int speed_altitude=0x7f02005d;
-        public static final int vs=0x7f02005e;
+        public static final int apalt=0x7f020057;
+        public static final int aphdg=0x7f020058;
+        public static final int apspeed=0x7f020059;
+        public static final int bug=0x7f02005a;
+        public static final int bugfilled=0x7f02005b;
+        public static final int heading=0x7f02005c;
+        public static final int horizon=0x7f02005d;
+        public static final int ic_launcher=0x7f02005e;
+        public static final int mask=0x7f02005f;
+        public static final int speed_altitude=0x7f020060;
+        public static final int vs=0x7f020061;
     }
     public static final class id {
         public static final int action_bar=0x7f05001c;
