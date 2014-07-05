@@ -102,8 +102,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		super(context, attrs);
 		
 		//Select a plane
-		//selectedPlane = A330;
-		selectedPlane = B777;
+		selectedPlane = A330;
+		//selectedPlane = B777;
 		
 		// TODO Auto-generated constructor stub
 		surfaceHolder = this.getHolder();

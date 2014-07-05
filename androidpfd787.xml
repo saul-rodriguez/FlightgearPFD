@@ -129,6 +129,62 @@
     <node>/instrumentation/afds/max-airspeed-kts</node>
    </chunk>
 
+<chunk>
+    <name>autopilot anunciator</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/mode-annunciator</node>
+   </chunk>
+
+   <chunk>
+    <name>pitch mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/pitch-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>roll mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/roll-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>speed mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/speed-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>AP set altitude</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/autopilot/settings/target-altitude-ft</node>
+   </chunk>
+
+   <chunk>
+    <name>AP actual altitude</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/autopilot/settings/target-altitude-ft</node>
+   </chunk>
+
+   <chunk>
+    <name>AP target speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/autopilot/settings/target-speed-kt</node>
+   </chunk>
+
+   <chunk>
+    <name>AP heading bug</name>
+    <format>%d</format>
+    <node>/autopilot/settings/heading-bug-deg</node>
+   </chunk>
+
+
   </output>
 
  </generic>
