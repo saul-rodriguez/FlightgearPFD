@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+
+<PropertyList>
+
+ <generic>
+
+  <output>
+   <line_separator>newline</line_separator>
+   <var_separator>:</var_separator>
+
+   <chunk>
+    <name>speed</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/airspeed-indicator/indicated-speed-kt</node>
+   </chunk>
+
+   <chunk>
+    <name>altitude</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/altimeter/indicated-altitude-ft</node>
+   </chunk>
+   
+   <chunk>
+    <name>rate of climb</name>
+    <format>%f</format>
+    <type>float</type>
+    <node>/instrumentation/vertical-speed-indicator/indicated-speed-fpm</node>
+   </chunk>
+
+   <chunk>
+    <name>pitch angle</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/orientation/pitch-deg</node>
+   </chunk>
+
+   <chunk>
+    <name>Roll angle</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/orientation/roll-deg</node>
+   </chunk>
+
+   <chunk>
+    <name>heading</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/orientation/heading-deg</node>
+   </chunk>
+
+ <chunk>
+    <name>NAV1 quality signal</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/signal-quality-norm</node>
+   </chunk>
+
+   <chunk>
+    <name>NAV1 localizer present </name>
+    <type>bool</type>
+    <node>/instrumentation/nav/nav-loc</node>
+   </chunk>
+
+   <chunk>
+    <name>Nav1 heading deflection </name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/heading-needle-deflection-norm</node>
+   </chunk>	
+
+   <chunk>
+    <name>Glideslope activated</name>
+    <type>bool</type>
+    <node>/instrumentation/nav/has-gs</node>
+   </chunk>
+
+   <chunk>
+    <name>Glideslope in range</name>
+    <type>bool</type>
+    <node>/instrumentation/nav/gs-in-range</node>
+   </chunk>
+
+   <chunk>
+    <name>Glideslope deflection </name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/gs-needle-deflection-norm</node>
+   </chunk>
+
+   <chunk>
+    <name>radio altimeter</name>
+    <format>%05d</format>
+    <node>/position/altitude-agl-ft</node>
+   </chunk>
+ 
+   <chunk>
+    <name>Mach speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/airspeed-indicator/indicated-mach</node>
+   </chunk>
+
+   <chunk>
+    <name>Stall speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/weu/state/stall-speed</node>
+   </chunk>
+
+   <chunk>
+    <name>Stall-speed indicator activated	</name>
+    <type>bool</type>
+    <node>/instrumentation/weu/state/stall-warning</node>
+   </chunk>
+
+   <chunk>
+    <name>Flaps status</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/controls/flight/flaps</node>
+   </chunk>
+
+   <chunk>
+    <name>Max speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/afds/max-airspeed-kts</node>
+   </chunk>
+
+   <chunk>
+    <name>autopilot anunciator</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/mode-annunciator</node>
+   </chunk>
+
+   <chunk>
+    <name>pitch mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/pitch-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>roll mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/roll-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>speed mode</name>
+    <type>string</type>
+    <format>%s</format>
+    <node>/instrumentation/afds/ap-modes/speed-mode</node>
+   </chunk>
+
+   <chunk>
+    <name>AP set altitude</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/flight-management/fcu-values/alt</node>
+   </chunk>
+
+   <chunk>
+    <name>AP actual altitude</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/flight-management/fcu-values/alt</node>
+   </chunk>
+
+   <chunk>
+    <name>AP target speed</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/flight-management/fcu-values/ias</node>
+   </chunk>
+
+   <chunk>
+    <name>AP heading bug</name>
+    <format>%d</format>
+    <node>/autopilot/settings/heading-bug-deg</node>
+   </chunk>
+
+
+  </output>
+
+ </generic>
+
+</PropertyList>
