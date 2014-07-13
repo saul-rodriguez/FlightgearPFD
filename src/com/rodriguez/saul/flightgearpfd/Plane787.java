@@ -112,8 +112,8 @@ public class Plane787 {
 		//Initialize all the parameters
 		scaleFactor = (float)1.0;
 		
-		horizontRollAngle = 45;
-		horizontPitchAngle = 10;
+		horizontRollAngle = 90;
+		horizontPitchAngle = 90;
 		speed = 200;
 		altitude = 12400;
 		verticalSpeed = 500;
@@ -142,8 +142,8 @@ public class Plane787 {
 		
 		//Alternative horizont 787
 		
-		altwidth = 1500;
-		altheight = 1500;
+		altwidth = 2500;
+		altheight = 1300;
 		Bitmap.Config conf = Bitmap.Config.ARGB_8888;
 		althorBitmap = Bitmap.createBitmap(altwidth, altheight, conf);
 		althorMatrix = new Matrix();
@@ -249,6 +249,10 @@ public class Plane787 {
 		int offx = width/2;
 		int offy = height/2;
 		
+		
+		paint.setAntiAlias(false);
+        paint.setFilterBitmap(false);
+        
 		paint.setColor(Color.BLUE);
 		paint.setStyle(Paint.Style.FILL);
 				
@@ -407,10 +411,12 @@ public class Plane787 {
 		}	
 		
 		altcanvas.drawPath(ground, paint);
+				
 		
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(Color.WHITE);
 		paint.setStrokeWidth((float)(2*scaleFactor));
+				
 		
 		altcanvas.drawPath(ground, paint);
 		paint.setStyle(Paint.Style.FILL);
@@ -418,16 +424,20 @@ public class Plane787 {
 		//
 		int aux_x = horizont.getWidth()/2;
 	    int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
-	        
-	    crophorizont = Bitmap.createBitmap(horizont,0, aux_y - 200, horizont.getWidth(), 400);
+	    //int aux_y = horizont.getHeight()/2;
+	    
+	    //Change to centered square!
+	    crophorizont = Bitmap.createBitmap(horizont,0, aux_y - 300, horizont.getWidth(), 600);
 	                
 	    horizontMatrix.reset();
 	    horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2 -2);
 	    horizontMatrix.postRotate(horizontRollAngle);
-	    horizontMatrix.postScale(scaleFactor, scaleFactor);
-	    horizontMatrix.postTranslate(offx, offy);
+	    //horizontMatrix.postScale(scaleFactor, scaleFactor);
+	    
+	    //move it to the center of the screen + offset!
+	    horizontMatrix.postTranslate(centerx, centery);
 		
-	    altcanvas.drawBitmap(crophorizont,horizontMatrix, paint);
+	    //altcanvas.drawBitmap(crophorizont,horizontMatrix, paint);
 		
 		// Crop the alternative horizont and paste it on the final canvas 
 		
@@ -442,7 +452,14 @@ public class Plane787 {
 		althorMatrix.postScale(scaleFactor, scaleFactor);
 		althorMatrix.postTranslate(centerx, centery - (int)(55*scaleFactor) );
 		
-		canvas.drawBitmap(althorCropBitmap, althorMatrix, paint);
+				
+        
+		canvas.drawBitmap(althorCropBitmap, althorMatrix, paint);		
+		
+		paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        
+		canvas.drawBitmap(crophorizont,horizontMatrix, paint);
 		
 	}
 	
