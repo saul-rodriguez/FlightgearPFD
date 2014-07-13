@@ -463,7 +463,7 @@ public class Plane777 {
 		//Draw VS text
 		int auxvs = (int)(Math.abs(verticalSpeed)/100)*100;
 		String vspeed = String.format("%d", auxvs);
-		int x3 = centerx + (int)(420*scaleFactor);
+		int x3 = centerx + (int)(440*scaleFactor);
 		
 		if (verticalSpeed > 400) {		
 			canvas.drawText(vspeed, x3, (centery - (int)(210*scaleFactor)), paint);

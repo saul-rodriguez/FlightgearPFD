@@ -1086,13 +1086,16 @@ containing a value of this type.
         public static final int bugfilled=0x7f02005e;
         public static final int heading=0x7f02005f;
         public static final int horizon=0x7f020060;
-        public static final int ic_launcher=0x7f020061;
-        public static final int mask=0x7f020062;
-        public static final int maska330=0x7f020063;
-        public static final int speed_altitude=0x7f020064;
-        public static final int speed_altitudea330=0x7f020065;
-        public static final int vs=0x7f020066;
-        public static final int vsa330=0x7f020067;
+        public static final int horizon787=0x7f020061;
+        public static final int horizon787s=0x7f020062;
+        public static final int ic_launcher=0x7f020063;
+        public static final int mask=0x7f020064;
+        public static final int maska330=0x7f020065;
+        public static final int speed_altitude=0x7f020066;
+        public static final int speed_altitudea330=0x7f020067;
+        public static final int vs=0x7f020068;
+        public static final int vs787=0x7f020069;
+        public static final int vsa330=0x7f02006a;
     }
     public static final class id {
         public static final int action_bar=0x7f05001c;

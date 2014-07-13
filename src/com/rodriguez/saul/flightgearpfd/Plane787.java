@@ -11,7 +11,8 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.util.AttributeSet;
+import android.graphics.Path;
+import android.util.Log;
 
 public class Plane787 {
 	public int centerx;
@@ -45,7 +46,7 @@ public class Plane787 {
 	float apspeed; // AP speed
 	int apheading; //AP heading bug
 	
-	public Bitmap mask = null;
+	Bitmap mask = null;
 	Bitmap horizont = null;
 	Bitmap vs = null;
 	Bitmap marks = null;	
@@ -69,6 +70,16 @@ public class Plane787 {
 	
 	Context mContext;
 	
+	
+	//Alternative horizon 787
+	Bitmap althorBitmap = null;
+	Bitmap althorCropBitmap = null;
+	
+	Matrix althorMatrix;
+	int altwidth;
+	int altheight;
+	Canvas altcanvas;
+	
 	public Plane787(Context context) {
 		
 		//Set the context from tje Activity
@@ -87,8 +98,8 @@ public class Plane787 {
 		
 		//Load the bitmaps		
 		mask = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.mask);
-		horizont = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.horizon);
-		vs = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.vs);
+		horizont = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.horizon787s);
+		vs = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.vs787);
 		marks = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.speed_altitude);
 		compass = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.heading);
 		bug = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bug);
@@ -102,7 +113,7 @@ public class Plane787 {
 		scaleFactor = (float)1.0;
 		
 		horizontRollAngle = 45;
-		horizontPitchAngle = 0;
+		horizontPitchAngle = 10;
 		speed = 200;
 		altitude = 12400;
 		verticalSpeed = 500;
@@ -127,6 +138,17 @@ public class Plane787 {
 		apactualaltitude = 12800;
 		apspeed = 200;
 		apheading = 20; 
+		
+		
+		//Alternative horizont 787
+		
+		altwidth = 1500;
+		altheight = 1500;
+		Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+		althorBitmap = Bitmap.createBitmap(altwidth, altheight, conf);
+		althorMatrix = new Matrix();
+		altcanvas  = new Canvas(althorBitmap);
+		
 	}
 	
 
@@ -162,6 +184,8 @@ public class Plane787 {
         compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
        //Prepare artificial horizont Alternative Code
+        
+        /*
         int aux_x = horizont.getWidth()/2;
         int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
         
@@ -172,7 +196,7 @@ public class Plane787 {
         horizontMatrix.postRotate(horizontRollAngle);
         horizontMatrix.postScale(scaleFactor, scaleFactor);
         horizontMatrix.postTranslate(centerx, centery);
-                           
+          */                 
         
 		//Lock the canvas and start drawin
         //Canvas canvas = surfaceHolder.lockCanvas();
@@ -181,14 +205,17 @@ public class Plane787 {
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         //paint.setDither(true);
-        canvas.drawColor(Color.BLACK);       
+        canvas.drawColor(Color.BLACK);   
+        drawHorizont(canvas,paint);
         //canvas.drawBitmap(horizont, horizontMatrix, paint);
-        canvas.drawBitmap(crophorizont, horizontMatrix, paint);
+        //canvas.drawBitmap(crophorizont, horizontMatrix, paint);
+        
+        
         canvas.drawBitmap(vs, vsMatrix, null);
         drawAltitudeLine(canvas,paint);
         drawSpeedLine(canvas,paint);
         
-        canvas.drawBitmap(mask,maskMatrix,paint);
+        //canvas.drawBitmap(mask,maskMatrix,paint);
         canvas.drawBitmap(compass, compassMatrix, paint);
         
         drawAPsettings(canvas,paint);
@@ -209,6 +236,214 @@ public class Plane787 {
         drawMinSpeed(canvas,paint);
         drawMaxSpeed(canvas,paint);
         drawAPStatus(canvas,paint);
+	}
+	
+	void drawHorizont(Canvas canvas, Paint paint)
+	{
+		final int width = altwidth;
+		final int height = altheight;
+		int borderx1 = -width/2;
+		int bordery1 = -height/2;
+		int borderx2 = width/2;		
+		int bordery2 = height/2;
+		int offx = width/2;
+		int offy = height/2;
+		
+		paint.setColor(Color.BLUE);
+		paint.setStyle(Paint.Style.FILL);
+				
+		
+		if (horizontRollAngle == 90 || horizontRollAngle == -90) {
+			horizontRollAngle += 0.01;
+		}
+		
+		double m = Math.tan(horizontRollAngle/180*Math.PI);
+		
+		double x1,x2,y1,y2,x3,y3,aux_x1, aux_x2;
+		
+		double pitchOffset = scaleFactor*calculatePitchshift();
+				
+		//CEnter point
+		x1 = 0;
+		y1 = 0;
+		//x1 = pitchOffset*Math.cos((horizontRollAngle+90)/180*Math.PI);
+		//y1 = pitchOffset*Math.sin((horizontRollAngle+90)/180*Math.PI);;
+		
+		//Left  border point
+		x2 = borderx1;
+		y2 = y1 + m*(x2 - x1);
+
+		//Right border point
+		x3 = borderx2;
+		y3 = y1 + m*(x3 - x1);
+		
+		//auxiliar points
+		
+		//left 
+		aux_x1 = (bordery1 - y1)/m + x1;
+		//right
+		aux_x2 = (bordery2 - y1)/m + x1;
+		
+		//Apply offset to the points;
+		
+		borderx1 += offx;
+		borderx2 += offx;
+		bordery1 += offy;
+		bordery2 += offy;
+			
+		Path path = new Path();
+		path.moveTo(borderx1, bordery1);
+		path.lineTo(borderx2, bordery1);
+		path.lineTo(borderx2, bordery2);
+		path.lineTo(borderx1, bordery2);
+				
+		//Draw background
+		altcanvas.drawPath(path, paint);
+	
+		x1 += offx;
+		y1 += offy;		
+		x2 += offx;
+		y2 += offy;		
+		x3 += offx;		
+		y3 += offy;
+		
+		aux_x1 += offx;
+		aux_x2 += offx;
+				
+		paint.setColor(Color.rgb(169, 88, 15));
+		Path ground = new Path();
+		//ground down
+		if (horizontRollAngle >= 0 && horizontRollAngle < 90) {
+		
+			if (y2 < bordery1) {
+				ground.moveTo(borderx1, bordery1); //upper corner
+				ground.lineTo((float)(aux_x1), bordery1); //point1
+				
+			} else {
+				ground.moveTo((float)x2,(float)y2);				
+			}
+			
+			if (y3 > bordery2) {
+				ground.lineTo((float) (aux_x2), (float)bordery2);
+				ground.lineTo((float) borderx2, (float) bordery2);
+			} else {
+				ground.lineTo((float)x3, (float)y3);
+				ground.lineTo((float)x3, bordery2);
+				
+			}
+			
+			ground.lineTo((float)borderx1, (float)bordery2);
+						
+		}
+		
+		if (horizontRollAngle < 0 && horizontRollAngle > -90) {
+			
+			if (y2 > bordery2) {
+				ground.moveTo(borderx1, bordery2); //upper corner
+				ground.lineTo((float)(aux_x2), bordery2); //point1
+				
+			} else {
+				ground.moveTo((float)x2,(float)y2);				
+			}
+			
+			if (y3 < bordery1) {
+				ground.lineTo((float) (aux_x1), (float)bordery1);
+				ground.lineTo((float) borderx2, (float) bordery1);
+				ground.lineTo((float) borderx2, (float) bordery2);
+				
+			} else {
+				ground.lineTo((float)x3, (float)y3);
+				ground.lineTo((float)x3, bordery2);
+				
+			}
+			
+			ground.lineTo((float)borderx1, (float)bordery2);
+						
+		}
+		
+		if (horizontRollAngle >= 90 && horizontRollAngle <= 180) {
+			if (y2 > bordery2) {
+				ground.moveTo(borderx1, bordery2); //upper corner
+				ground.lineTo((float)(aux_x2), bordery2); //point1
+				
+			} else {
+				ground.moveTo((float)x2,(float)y2);				
+			}
+			
+			if (y3 < bordery1) {
+				ground.lineTo((float) (aux_x1), (float)bordery1);
+				ground.lineTo((float) borderx1, (float) bordery1);
+			} else {
+				ground.lineTo((float)x3, (float)y3);
+				ground.lineTo((float)x3, (float)bordery1);
+				ground.lineTo((float)borderx1, bordery1);
+				
+			}						
+		}	
+		
+		if (horizontRollAngle <= -90 && horizontRollAngle >= -180) {
+				
+			if (y2 < bordery1) {
+				
+				//ground.moveTo(borderx1, bordery1); //upper corner
+				ground.moveTo((float)(aux_x1), (float)bordery1); //point1
+				ground.lineTo((float)(borderx2), (float)bordery1); //point1
+				
+				
+			} else {
+				ground.moveTo((float)x2, (float)y2); //upper corner
+				ground.lineTo((float)x3,(float)y3);				
+			}
+			
+			if (y3 > bordery2) {
+				ground.lineTo((float) borderx2, (float)bordery2);
+				ground.lineTo((float) aux_x2, (float) bordery2);
+			} else {
+				//ground.lineTo((float)x3, (float)y3);
+				ground.lineTo((float)x3, (float)bordery1);
+				ground.lineTo((float)borderx1, (float)bordery1);
+				
+			}						
+		}	
+		
+		altcanvas.drawPath(ground, paint);
+		
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setColor(Color.WHITE);
+		paint.setStrokeWidth((float)(2*scaleFactor));
+		
+		altcanvas.drawPath(ground, paint);
+		paint.setStyle(Paint.Style.FILL);
+		
+		//
+		int aux_x = horizont.getWidth()/2;
+	    int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
+	        
+	    crophorizont = Bitmap.createBitmap(horizont,0, aux_y - 200, horizont.getWidth(), 400);
+	                
+	    horizontMatrix.reset();
+	    horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2 -2);
+	    horizontMatrix.postRotate(horizontRollAngle);
+	    horizontMatrix.postScale(scaleFactor, scaleFactor);
+	    horizontMatrix.postTranslate(offx, offy);
+		
+	    altcanvas.drawBitmap(crophorizont,horizontMatrix, paint);
+		
+		// Crop the alternative horizont and paste it on the final canvas 
+		
+		offx -= pitchOffset*Math.cos((horizontRollAngle+90)/180*Math.PI);
+		offy -= pitchOffset*Math.sin((horizontRollAngle+90)/180*Math.PI);;
+		
+		//althorCropBitmap = Bitmap.createBitmap(althorBitmap,offx - 500,offy - 300 - (int)(55/scaleFactor), 1000, 600);
+		althorCropBitmap = Bitmap.createBitmap(althorBitmap,offx - 500,offy - 300 - (int)(55), 1000, 600);
+		
+		althorMatrix.reset();
+		althorMatrix.postTranslate(-althorCropBitmap.getWidth()/2, -althorCropBitmap.getHeight()/2);		
+		althorMatrix.postScale(scaleFactor, scaleFactor);
+		althorMatrix.postTranslate(centerx, centery - (int)(55*scaleFactor) );
+		
+		canvas.drawBitmap(althorCropBitmap, althorMatrix, paint);
+		
 	}
 	
 	double calculatePitchshift()
@@ -456,7 +691,7 @@ public class Plane787 {
 		//Draw VS text
 		int auxvs = (int)(Math.abs(verticalSpeed)/100)*100;
 		String vspeed = String.format("%d", auxvs);
-		int x3 = centerx + (int)(420*scaleFactor);
+		int x3 = centerx + (int)(440*scaleFactor);
 		
 		if (verticalSpeed > 400) {		
 			canvas.drawText(vspeed, x3, (centery - (int)(210*scaleFactor)), paint);
