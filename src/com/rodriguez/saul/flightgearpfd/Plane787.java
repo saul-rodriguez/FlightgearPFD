@@ -503,7 +503,15 @@ public class Plane787 {
 		
 		//Marks with text
 		for (int i = 0; i<6; i++){
+			
 			y[i] = y1 - (int)((300 - i*100)*scaleFactor);
+			
+			if (y[i] < (centery - (int)(250*scaleFactor)))
+					continue;
+			
+			if (y[i] > (centery + (int)(250*scaleFactor)))
+				continue;
+			
 			alt[i] = altitude1 + (600 - i*200);
 			canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);
 			canvas.drawText(String.format("%d", alt[i]), offsetx + (int)(30*scaleFactor), y[i]+(int)(10*scaleFactor), paint);
@@ -513,6 +521,13 @@ public class Plane787 {
 		//Marks without text
 		for (int i = 0; i<6; i++){
 			y[i] = y1 - (int)((350 - i*100)*scaleFactor); 
+
+			if (y[i] < (centery - (int)(250*scaleFactor)))
+					continue;
+			
+			if (y[i] > (centery + (int)(250*scaleFactor)))
+				continue;
+			
 			canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);			
 		}
 	}
@@ -544,6 +559,13 @@ public class Plane787 {
 		//Marks with text
 		for (int i = 0; i<8; i++){
 			y[i] = y1 - (int)(((75*4) - i*75)*scaleFactor);
+			
+			if (y[i] < (centery - (int)(250*scaleFactor)))
+				continue;
+		
+			if (y[i] > (centery + (int)(250*scaleFactor)))
+				continue;
+			
 			alt[i] = speed1 + (4*20) - i*20;
 			canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);
 			canvas.drawText(String.format("%d", alt[i]), offsetx - (int)(60*scaleFactor), y[i]+(int)(10*scaleFactor), paint);
@@ -553,6 +575,13 @@ public class Plane787 {
 		//Marks without text
 		for (int i = 0; i<8; i++){
 			y[i] = y1 - (int)(((75*4+37) - i*75)*scaleFactor); 
+			
+			if (y[i] < (centery - (int)(250*scaleFactor)))
+				continue;
+		
+			if (y[i] > (centery + (int)(250*scaleFactor)))
+				continue;
+			
 			canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);			
 		}		
 		
