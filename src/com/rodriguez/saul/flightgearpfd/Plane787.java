@@ -101,7 +101,7 @@ public class Plane787 {
 		horizont = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.horizon787s);
 		vs = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.vs787);
 		marks = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.speed_altitude);
-		compass = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.heading);
+		compass = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.heading787);
 		bug = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bug);
 		bugfilled = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bugfilled);
 		apalt = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apalt);
@@ -287,6 +287,7 @@ public class Plane787 {
 		aux_x1 = (bordery1 - y1)/m + x1;
 		//right
 		aux_x2 = (bordery2 - y1)/m + x1;
+			
 		
 		//Apply offset to the points;
 		
@@ -411,23 +412,27 @@ public class Plane787 {
 		}	
 		
 		altcanvas.drawPath(ground, paint);
-				
 		
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(Color.WHITE);
 		paint.setStrokeWidth((float)(2*scaleFactor));
-				
 		
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        			
 		altcanvas.drawPath(ground, paint);
+		
+		paint.setAntiAlias(false);
+        paint.setFilterBitmap(false);
+        
 		paint.setStyle(Paint.Style.FILL);
 		
-		//
 		int aux_x = horizont.getWidth()/2;
 	    int aux_y = horizont.getHeight()/2 -(int)calculatePitchshift();
 	    //int aux_y = horizont.getHeight()/2;
 	    
 	    //Change to centered square!
-	    crophorizont = Bitmap.createBitmap(horizont,0, aux_y - 300, horizont.getWidth(), 600);
+	    crophorizont = Bitmap.createBitmap(horizont,0, aux_y - 250, horizont.getWidth(), 500);
 	                
 	    horizontMatrix.reset();
 	    horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2 -2);
@@ -451,7 +456,6 @@ public class Plane787 {
 		althorMatrix.postTranslate(-althorCropBitmap.getWidth()/2, -althorCropBitmap.getHeight()/2);		
 		althorMatrix.postScale(scaleFactor, scaleFactor);
 		althorMatrix.postTranslate(centerx, centery - (int)(55*scaleFactor) );
-		
 				
         
 		canvas.drawBitmap(althorCropBitmap, althorMatrix, paint);		
