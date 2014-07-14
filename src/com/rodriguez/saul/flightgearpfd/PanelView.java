@@ -210,7 +210,9 @@ public class PanelView extends Activity {
 				mMFD777.setAPaltitude(values[0].getFloat(MessageHandlerFGFS.APALTITUDE));
 				mMFD777.setAPactualaltitude(values[0].getFloat(MessageHandlerFGFS.APACTUALALT));				
 				mMFD777.setAPspeed(values[0].getFloat(MessageHandlerFGFS.APSPEED));
-				mMFD777.setAPheading(values[0].getInt(MessageHandlerFGFS.APHEADING));				
+				mMFD777.setAPheading(values[0].getInt(MessageHandlerFGFS.APHEADING));	
+				mMFD777.setDMEinrange(values[0].getBool(MessageHandlerFGFS.DMEINRANGE));
+				mMFD777.setDME(values[0].getFloat(MessageHandlerFGFS.DME));
 				
 				mMFD777.draw();
 				

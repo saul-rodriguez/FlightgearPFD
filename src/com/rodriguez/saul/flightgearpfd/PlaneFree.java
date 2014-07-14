@@ -41,6 +41,9 @@ public class PlaneFree {
 	float apactualaltitude; //AP actual/current altitude
 	float apspeed; // AP speed
 	int apheading; //AP heading bug
+	boolean dmeinrange; // is DME in range ?
+	float dme; // dme distance
+	
 	
 	public Bitmap mask = null;
 	Bitmap horizont = null;
@@ -124,6 +127,9 @@ public class PlaneFree {
 		apactualaltitude = 12800;
 		apspeed = 200;
 		apheading = 20; 
+		
+		dmeinrange = false;
+		dme = 0;
 	}
 	
 

@@ -42,6 +42,8 @@ public class Plane777 {
 	float apactualaltitude; //AP actual/current altitude
 	float apspeed; // AP speed
 	int apheading; //AP heading bug
+	boolean dmeinrange; // is DME in range ?
+	float dme; // dme distance
 	
 	public Bitmap mask = null;
 	Bitmap horizont = null;
@@ -125,6 +127,9 @@ public class Plane777 {
 		apactualaltitude = 12800;
 		apspeed = 200;
 		apheading = 20; 
+		dmeinrange = false;
+		dme = 0;
+		
 	}
 	
 
@@ -207,6 +212,7 @@ public class Plane777 {
         drawMinSpeed(canvas,paint);
         drawMaxSpeed(canvas,paint);
         drawAPStatus(canvas,paint);
+        drawDME(canvas,paint);
 	}
 	
 	double calculatePitchshift()
@@ -741,6 +747,19 @@ public class Plane777 {
 		
 		canvas.drawBitmap(aphead, apheadMatrix, paint);
 			
+	}
+	
+	void drawDME(Canvas canvas, Paint paint)
+	{
+		paint.setStyle(Paint.Style.FILL);
+		paint.setColor(Color.WHITE);		
+		paint.setTextSize(30*scaleFactor);
+		
+		if (dmeinrange == false)
+			return;
+		
+		canvas.drawText(String.format("DME %3.1f", dme ), centerx - (int)(170*scaleFactor), centery - (int)(240*scaleFactor), paint);
+		
 	}
 	
 }

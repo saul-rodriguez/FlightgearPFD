@@ -45,6 +45,8 @@ public class Plane787 {
 	float apactualaltitude; //AP actual/current altitude
 	float apspeed; // AP speed
 	int apheading; //AP heading bug
+	boolean dmeinrange; // is DME in range ?
+	float dme; // dme distance
 	
 	Bitmap mask = null;
 	Bitmap horizont = null;
@@ -57,6 +59,7 @@ public class Plane787 {
 	Bitmap apalt = null;
 	Bitmap apspeedind = null;
 	Bitmap aphead = null;
+	Bitmap boxglidescope = null;
 	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
@@ -67,6 +70,8 @@ public class Plane787 {
 	Matrix apaltMatrix;
 	Matrix apspeedindMatrix;
 	Matrix apheadMatrix;
+	Matrix boxglidescopeMatrix;
+	Matrix boxlocalizerMatrix;
 	
 	Context mContext;
 	
@@ -95,6 +100,8 @@ public class Plane787 {
 		apaltMatrix = new Matrix();
 		apspeedindMatrix = new Matrix();
 		apheadMatrix = new Matrix();
+		boxglidescopeMatrix = new Matrix();
+		boxlocalizerMatrix = new Matrix();
 		
 		//Load the bitmaps		
 		mask = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.mask);
@@ -107,6 +114,7 @@ public class Plane787 {
 		apalt = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apalt);
 		apspeedind = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apspeed);
 		aphead = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.aphdg);
+		boxglidescope = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.glidescope);
 		
 		
 		//Initialize all the parameters
@@ -138,6 +146,8 @@ public class Plane787 {
 		apactualaltitude = 12800;
 		apspeed = 200;
 		apheading = 20; 
+		dmeinrange = false;
+		dme = 0;
 		
 		
 		//Alternative horizont 787
@@ -236,6 +246,7 @@ public class Plane787 {
         drawMinSpeed(canvas,paint);
         drawMaxSpeed(canvas,paint);
         drawAPStatus(canvas,paint);
+        drawDME(canvas,paint);
 	}
 	
 	void drawHorizont(Canvas canvas, Paint paint)
@@ -437,7 +448,7 @@ public class Plane787 {
 	    horizontMatrix.reset();
 	    horizontMatrix.postTranslate(-crophorizont.getWidth()/2, -crophorizont.getHeight()/2 -2);
 	    horizontMatrix.postRotate(horizontRollAngle);
-	    //horizontMatrix.postScale(scaleFactor, scaleFactor);
+	    horizontMatrix.postScale(scaleFactor, scaleFactor);
 	    
 	    //move it to the center of the screen + offset!
 	    horizontMatrix.postTranslate(centerx, centery);
@@ -759,6 +770,17 @@ public class Plane787 {
 			return;
 		}
 		
+		//Draw box
+		//Prepare the mask
+		boxlocalizerMatrix.reset();
+		boxlocalizerMatrix.postTranslate(-boxglidescope.getWidth()/2, -boxglidescope.getHeight()/2 );
+		boxlocalizerMatrix.postRotate(90);
+		boxlocalizerMatrix.postScale(scaleFactor, scaleFactor);
+		boxlocalizerMatrix.postTranslate(centerx, centery + (int)(230*scaleFactor));
+				
+		canvas.drawBitmap(boxglidescope, boxlocalizerMatrix, paint);
+				
+		
 		//Paint paint;
 		//paint = new Paint();
 		//paint.setAntiAlias(true);
@@ -769,9 +791,10 @@ public class Plane787 {
 		paint.setStrokeWidth((int)(3*scaleFactor));
 		
 		//Draw center line line
-		canvas.drawLine(centerx, centery + (int)(230.*scaleFactor), centerx, centery + (int)(255.*scaleFactor), paint);
+		//canvas.drawLine(centerx, centery + (int)(230.*scaleFactor), centerx, centery + (int)(255.*scaleFactor), paint);
 				
-		int y2 = centery + (int)(240*scaleFactor);  
+		int y2 = centery + (int)(230*scaleFactor);  
+		canvas.drawLine(centerx, y2 - (int)(10*scaleFactor), centerx, y2 + (int)(15.*scaleFactor), paint);
 		
 		if (headingLoc >= -0.33 && headingLoc <= 0.33) {
 			
@@ -839,6 +862,16 @@ public class Plane787 {
 		
 		offsetx = centerx + (int)(235*scaleFactor); //Border
 		
+		//Draw box
+		//Prepare the mask
+		boxglidescopeMatrix.reset();
+		boxglidescopeMatrix.postTranslate(-boxglidescope.getWidth()/2, -boxglidescope.getHeight()/2 );
+		boxglidescopeMatrix.postScale(scaleFactor, scaleFactor);
+		boxglidescopeMatrix.postTranslate(centerx + (int)(247*scaleFactor), centery);
+		
+		canvas.drawBitmap(boxglidescope, boxglidescopeMatrix, paint);
+		
+		
 		//Paint paint;
 		//paint = new Paint();
 		//paint.setAntiAlias(true);
@@ -886,7 +919,7 @@ public class Plane787 {
 		//paint.setAntiAlias(true);
 		//paint.setDither(true);
 		paint.setColor(Color.BLACK);
-		canvas.drawRect(centerx - (int)(50*scaleFactor), centery + (int)(180*scaleFactor) , centerx + (int)(50*scaleFactor), centery + (int)(220*scaleFactor), paint);
+		canvas.drawRect(centerx - (int)(50*scaleFactor), centery + (int)(170*scaleFactor) , centerx + (int)(50*scaleFactor), centery + (int)(210*scaleFactor), paint);
 		
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(35*scaleFactor);	
@@ -906,7 +939,7 @@ public class Plane787 {
 		if (radioaltimeter < 10)
 			offset += (int)(10*scaleFactor);
 		
-		canvas.drawText(String.format("%d",radioaltimeter), centerx, centery + (int)(215*scaleFactor), paint);
+		canvas.drawText(String.format("%d",radioaltimeter), centerx, centery + (int)(205*scaleFactor), paint);
 	}
 	
 	void drawAPStatus(Canvas canvas, Paint paint)
@@ -942,10 +975,15 @@ public class Plane787 {
 		
 		//Selected AP Altitude 
 		offsetx = centerx + (int)(330*scaleFactor); //Border
-		paint.setColor(Color.MAGENTA);
+		//paint.setColor(Color.MAGENTA);
 		paint.setTextSize(35*scaleFactor);
 		paint.setTextAlign(Align.CENTER);
 				
+		paint.setColor(Color.BLACK);
+		canvas.drawRect(offsetx - (int)(60*scaleFactor), centery - (int)(305*scaleFactor), offsetx + (int)(60*scaleFactor), centery - (int)(265*scaleFactor), paint);
+		
+		paint.setColor(Color.MAGENTA);		
+		
 		canvas.drawText(String.format("%d",(int)apaltitude), offsetx, centery - (int)(270*scaleFactor), paint);
 		
 		//Actual AP Altitude
@@ -956,8 +994,7 @@ public class Plane787 {
 		if ((altitude - apactualaltitude > 500)) {
 			apactualaltitude = altitude - 500;
 		}
-		
-		
+				
 		offsetx = centerx + (int)(280*scaleFactor); //Border
 		offsety = centery - (int)((apactualaltitude - altitude)*verticalPitchScale*scaleFactor);   
 				
@@ -970,6 +1007,10 @@ public class Plane787 {
 		
 		//AP Speed Text
 		offsetx = centerx - (int)(330*scaleFactor); //Border
+		paint.setColor(Color.BLACK);
+		canvas.drawRect(offsetx - (int)(40*scaleFactor), centery - (int)(305*scaleFactor), offsetx + (int)(40*scaleFactor), centery - (int)(265*scaleFactor), paint);
+		
+		paint.setColor(Color.MAGENTA);		
 		canvas.drawText(String.format("%d",(int)apspeed), offsetx, centery - (int)(270*scaleFactor), paint);
 		
 		//AP speed indicator
@@ -1019,6 +1060,19 @@ public class Plane787 {
 		
 		canvas.drawBitmap(aphead, apheadMatrix, paint);
 			
+	}
+	
+	void drawDME(Canvas canvas, Paint paint)
+	{
+		paint.setStyle(Paint.Style.FILL);
+		paint.setColor(Color.WHITE);		
+		paint.setTextSize(25*scaleFactor);
+		
+		if (dmeinrange == false)
+			return;
+		
+		canvas.drawText(String.format("DME %3.1f", dme ), centerx - (int)(190*scaleFactor), centery - (int)(240*scaleFactor), paint);
+		
 	}
 	
 }

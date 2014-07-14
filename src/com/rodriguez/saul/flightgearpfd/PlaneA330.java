@@ -42,6 +42,8 @@ public class PlaneA330 {
 	float apactualaltitude; //AP actual/current altitude
 	float apspeed; // AP speed
 	int apheading; //AP heading bug
+	boolean dmeinrange; // is DME in range ?
+	float dme; // dme distance
 	
 	public Bitmap mask = null;
 	Bitmap horizont = null;
@@ -125,6 +127,9 @@ public class PlaneA330 {
 		apactualaltitude = 12800;
 		apspeed = 210;
 		apheading = 160; 
+		dmeinrange = false;
+		dme = 0;
+		
 	}
 	
 
@@ -209,6 +214,7 @@ public class PlaneA330 {
         drawMinSpeed(canvas,paint);
         drawMaxSpeed(canvas,paint);
         drawAPStatus(canvas,paint);
+        drawDME(canvas,paint);
 	}
 	
 	double calculatePitchshift()
@@ -886,6 +892,19 @@ public class PlaneA330 {
 			
 		}
 			
+	}
+	
+	void drawDME(Canvas canvas, Paint paint)
+	{
+		paint.setStyle(Paint.Style.FILL);
+		paint.setColor(Color.MAGENTA);		
+		paint.setTextSize(30*scaleFactor);
+		
+		if (dmeinrange == false)
+			return;
+		canvas.drawText(String.format("DME"), centerx - (int)(350*scaleFactor), centery + (int)(320*scaleFactor), paint);
+		canvas.drawText(String.format("%3.1fNM", dme ), centerx - (int)(350*scaleFactor), centery + (int)(350*scaleFactor), paint);
+		
 	}
 	
 }

@@ -78,6 +78,8 @@ public class MessageHandlerFGFS {
 	public static final int APACTUALALT = 23; //AP actual altitude
 	public static final int APSPEED = 24; // AP set speed
 	public static final int APHEADING = 25; // AP heading bug
+	public static final int DMEINRANGE = 26; // DME in range ?
+	public static final int DME = 27;
 	
 	public int getInt(int i) 
 	{

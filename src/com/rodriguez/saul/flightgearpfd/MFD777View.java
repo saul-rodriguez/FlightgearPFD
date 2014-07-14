@@ -47,9 +47,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	//int selectedPlane = B777;
 	
 	//Plane777 plane;
-	Plane787 plane;
+	//Plane787 plane;
 	//PlaneA330 plane;
-	//PlaneFree plane;
+	PlaneFree plane;
 	
 	
 	
@@ -100,6 +100,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	Bitmap apspeedind = null;
 	Bitmap aphead = null;
 	
+	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
 	Matrix vsMatrix;
@@ -114,8 +115,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		super(context, attrs);
 		
 		//plane = new Plane777(context);
-		plane = new Plane787(context);
-		//plane = new PlaneFree(context);
+		//plane = new Plane787(context);
+		plane = new PlaneFree(context);
 		//plane = new PlaneA330(context);
 		
 			
@@ -195,8 +196,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		mwidth = this.getWidth();
 		mheight = this.getHeight();
 		
-		Log.d("Saul", String.format("width = %d", mwidth));
-		Log.d("Saul", String.format("height = %d", mheight));
+		//Log.d("Saul", String.format("width = %d", mwidth));
+		//Log.d("Saul", String.format("height = %d", mheight));
 
 		centerx = mwidth/2;
 		centery = mheight/2;
@@ -445,5 +446,17 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	{
 		plane.apheading = newAPheading;		
 	}
+	
+	void setDMEinrange(boolean inrange)
+	{
+		plane.dmeinrange = inrange;
+	}
+	
+	void setDME(float newdme)
+	{
+		plane.dme = newdme;
+	}
+	
+	
 	
 }
