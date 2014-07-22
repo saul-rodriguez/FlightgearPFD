@@ -47,6 +47,13 @@ public class MainActivity extends Activity {
 	
 	public final static String MESS_PORT = "MESSPORT";
 	
+	public static final int B777 = 1;
+	public static final int B787 = 2;
+	public static final int A330 = 3;
+	public static final int FREE = 4;
+	
+	int plane = FREE;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,23 +107,37 @@ public class MainActivity extends Activity {
 		WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
 		String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 		
-		instructions.setTextSize(20);
+		instructions.setTextSize(18);
 		String text;
-		text = "\nINSTRUCTIONS \n\n";
-		text += "1 Download the files androidpfd777.xml and  androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		text = "Version 0.1";
+		text += "\nINSTRUCTIONS \n\n";
+		
+		if (plane == B777) {
+			text += "1 Download the protocol file androidpfd777.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		} else if (plane == B787) {
+			text += "1 Download the protocol file androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		} else if (plane == A330) {
+			text += "1 Download the protocol file androidpfd330.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		} else if (plane == FREE) {
+			text += "1 Download the files androidpfd777.xml and  androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		}
+				
 		text += "2 Copy these files in the directory $FG_ROOT/Protocol/\n";
 		text += "3 Enable WiFi in your android device\n";
-		text += "4 Launch flightgear with the option: --generic=socket,out,[Frequency],[IP android],[port],udp,[xml protocol file] where:\n";
+		text += "4 Launch flightgear with the option: --generic=socket,out,[Frequency],[IP android],[port],udp,[protocol filename] where:\n";
 		text += "[Frequency] = Refresh rate in Hz\n";
 		text += "[IP android] = The IP address of this device: " +  ip + " \n";
 		text += "[port] = Port number (must match field PORT NUMBER entered above)\n";
-		text += "[xml protocol filename] = either androidpfd777 or  androidpfd787\n\n";
+		text += "[protocol filename  without .xml] = either androidpfd777 or  androidpfd787\n\n";
 		text += "Example:\n";
-		text += "fgfs --generic=socket,out,40,192.168.0.23,5502,udp,androidpfd777\n";
+		text += "fgfs --generic=socket,out,20,"+ ip +",5502,udp,androidpfd777\n";
 		text += "5 Wait until flightgear finishes to start (cockpit visible), and click “Connect” in the android device.\n\n";
 
-		text += "Detailed instructions available at:  https://sites.google.com/site/flightgearandroid/flightgear-pfd";
+		text += "Detailed instructions available at:  https://sites.google.com/site/flightgearandroid/flightgear-pfd\n";
+		
+		
 		instructions.setText(text);
+		
 		
 	}
    

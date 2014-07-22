@@ -51,10 +51,6 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	//PlaneA330 plane;
 	PlaneFree plane;
 	
-	
-	
-	
-	
 	int mwidth;
 	int mheight;	
 	int centerx;
@@ -100,7 +96,6 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	Bitmap apspeedind = null;
 	Bitmap aphead = null;
 	
-	
 	Matrix maskMatrix;
 	Matrix horizontMatrix;
 	Matrix vsMatrix;
@@ -119,11 +114,6 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 		plane = new PlaneFree(context);
 		//plane = new PlaneA330(context);
 		
-			
-		
-				//Select a plane
-		//selectedPlane = A330;
-		//selectedPlane = B777;
 		
 		// TODO Auto-generated constructor stub
 		surfaceHolder = this.getHolder();
@@ -226,7 +216,7 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	public void draw() {
 		
 		long time, time2;
-		time = System.currentTimeMillis();
+		//time = System.currentTimeMillis();
 		/*
 		//Prepare the mask
 		maskMatrix.reset();
@@ -307,8 +297,8 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
         
         surfaceHolder.unlockCanvasAndPost(canvas);
         
-        time2 = System.currentTimeMillis();
-  		Log.d("777View", String.format("%d", (time2-time)));
+        //time2 = System.currentTimeMillis();
+  		//Log.d("777View", String.format("%d", (time2-time)));
        
 	}
 
