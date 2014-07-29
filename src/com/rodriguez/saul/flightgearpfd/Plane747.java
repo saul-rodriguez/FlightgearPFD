@@ -10,8 +10,9 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
+import android.util.Log;
 
-public class PlaneA330 {
+public class Plane747 {
 	public int centerx;
 	public int centery;
 	public float scaleFactor;
@@ -69,7 +70,7 @@ public class PlaneA330 {
 	
 	Context mContext;
 	
-	public PlaneA330(Context context) {
+	public Plane747(Context context) {
 		
 		//Set the context from tje Activity
 		mContext = context;
@@ -86,16 +87,16 @@ public class PlaneA330 {
 		apheadMatrix = new Matrix();
 		
 		//Load the bitmaps		
-		mask = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.maska330);
+		mask = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.mask);
 		horizont = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.horizon);
-		vs = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.vsa330);
-		marks = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.speed_altitudea330);
+		vs = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.vs);
+		marks = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.speed_altitude);
 		compass = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.heading);
 		bug = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bug);
 		bugfilled = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bugfilled);
-		apalt = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apalta330);
-		apspeedind = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apspeeda330);
-		aphead = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.aphdga330);
+		apalt = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apalt);
+		apspeedind = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.apspeed);
+		aphead = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.aphdg);
 		
 		
 		//Initialize all the parameters
@@ -106,7 +107,7 @@ public class PlaneA330 {
 		speed = 200;
 		altitude = 12400;
 		verticalSpeed = 500;
-		heading = 170;
+		heading = 10;
 		locnavQuality = (float)0.95;
 		locnav = false;
 		headingLoc = (float)-0.97;
@@ -125,8 +126,8 @@ public class PlaneA330 {
 		speedMode = new String("A/T");
 		apaltitude = 12500;
 		apactualaltitude = 12800;
-		apspeed = 210;
-		apheading = 160; 
+		apspeed = 200;
+		apheading = 20; 
 		dmeinrange = false;
 		dme = 0;
 		
@@ -149,20 +150,20 @@ public class PlaneA330 {
         vsMatrix.reset();
         vsMatrix.postTranslate(-vs.getWidth()/2, -vs.getHeight()/2);
         vsMatrix.postScale(scaleFactor, scaleFactor);
-        vsMatrix.postTranslate(centerx+(int)(44*scaleFactor), centery + (int)(50*scaleFactor));
+        vsMatrix.postTranslate(centerx+(int)(44*scaleFactor), centery-(int)(10*scaleFactor));
         
         //Prepare marks, speed & altitude boxes
         marksMatrix.reset();
         marksMatrix.postTranslate(-marks.getWidth()/2, -marks.getHeight()/2);
         marksMatrix.postScale(scaleFactor, scaleFactor);
-        marksMatrix.postTranslate(centerx+(int)(27*scaleFactor), centery + (int)(139*scaleFactor));
+        marksMatrix.postTranslate(centerx+(int)(13*scaleFactor), centery + (int)(120*scaleFactor));
         
         //Prepare compass
-        //compassMatrix.reset();
-        //compassMatrix.postTranslate(-compass.getWidth()/2, -compass.getHeight()/2 );
-        //compassMatrix.postRotate(-heading);
-        //compassMatrix.postScale(scaleFactor, scaleFactor);
-        //compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
+        compassMatrix.reset();
+        compassMatrix.postTranslate(-compass.getWidth()/2, -compass.getHeight()/2 );
+        compassMatrix.postRotate(-heading);
+        compassMatrix.postScale(scaleFactor, scaleFactor);
+        compassMatrix.postTranslate(centerx, centery + (int)(548*scaleFactor));
         
        //Prepare artificial horizont Alternative Code
         int aux_x = horizont.getWidth()/2;
@@ -190,23 +191,20 @@ public class PlaneA330 {
         canvas.drawBitmap(vs, vsMatrix, null);
         drawAltitudeLine(canvas,paint);
         drawSpeedLine(canvas,paint);
-        drawHeadingLines(canvas, paint);
         
         canvas.drawBitmap(mask,maskMatrix,paint);
-       // canvas.drawBitmap(compass, compassMatrix, paint);
+        canvas.drawBitmap(compass, compassMatrix, paint);
         
-        //drawAPsettings(canvas,paint);
-        canvas.drawBitmap(marks, marksMatrix, paint);
         drawAPsettings(canvas,paint);
+        canvas.drawBitmap(marks, marksMatrix, paint);
         
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(35*scaleFactor));
         
         //draw speed kts, match, altitude, and radioaltimeter
-        //canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(350*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%d", (int)speed), (centerx - (int)(350*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         canvas.drawText(String.format("%4.3f",mach), (centerx - (int)(340*scaleFactor)), centery + (int)(280*scaleFactor), paint);
-        paint.setColor(Color.GREEN);
-        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(360*scaleFactor)), centery + (int)(10*scaleFactor), paint);
+        canvas.drawText(String.format("%d", (int)altitude), (centerx + (int)(365*scaleFactor)), centery + (int)(10*scaleFactor), paint);
         drawRadioAltimeter(canvas, paint);
                 
         drawVerticalSpeed(canvas,paint);
@@ -306,52 +304,8 @@ public class PlaneA330 {
 			y[i] = y1 - (int)(((75*4+37) - i*75)*scaleFactor); 
 			canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);			
 		}		
-				
-	}
-	
-	void drawHeadingLines(Canvas canvas, Paint paint)
-	{
-		int offsety = centery + (int)(290*scaleFactor);		
-		final float headingPitchScale = (float) (100./10); // 100pixels/10 degees = 10 pixels/degree
 		
-		paint.setColor(Color.WHITE);
-		paint.setTextSize(30*scaleFactor);
-		paint.setStrokeWidth((int)(2*scaleFactor));
-		paint.setTextAlign(Align.CENTER);
 		
-		//Calculate first verticall line
-		float frest = heading - 10*(int)((heading)/10); //float residual
-		int rest = (int)(heading)%10; //residual to 1st lower mark in kts
-		int heading1 = (int)(heading) - rest; // speed in kts of 1st lower mark
-		int offset1 = (int) (frest*headingPitchScale*scaleFactor);
-		int x1 = centerx - offset1;
-				
-		int x[] = new int[7];
-		int alt[] = new int[7];
-				
-				//Marks with text
-		for (int i = 0; i<7; i++){
-			x[i] = x1 - (int)(((100*3) - i*100)*scaleFactor);
-			alt[i] = heading1 - (3*10) + i*10;
-			
-			if (alt[i] < 0) {
-				alt[i] += 360;
-			} else if (alt[i] >= 360) {
-				alt[i] -= 360;
-			}
-			//canvas.drawLine(offsetx, y[i], offsetx+(int)(30*scaleFactor), y[i], paint);
-			//canvas.drawText(String.format("%d", alt[i]), offsetx - (int)(60*scaleFactor), y[i]+(int)(10*scaleFactor), paint);
-			canvas.drawLine(x[i], offsety, x[i], offsety+(int)(30*scaleFactor), paint);
-			canvas.drawText(String.format("%d", alt[i]/10), x[i], offsety + (int)(60*scaleFactor),paint);
-			
-		}
-				
-			//Marks without text
-		for (int i = 0; i<7; i++){
-			x[i] = x1 - (int)(((100*3+50) - i*100)*scaleFactor); 
-			canvas.drawLine(x[i], offsety, x[i], offsety+(int)(15*scaleFactor), paint);		
-		}	
-				
 	}
 	
 	void drawMinSpeed(Canvas canvas, Paint paint)
@@ -359,18 +313,30 @@ public class PlaneA330 {
 		int offsetx = centerx - (int)(267*scaleFactor); //Border
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
 		// Draw stall speed
+		
+		/*
+		//if (selectedPlane == B777) {
+			//Stall-speed indicator inactive
+			if (stallwarning == false) 
+				return;								
 				
-			
+			} else if (selectedPlane == A330) {
+			if (radioaltimeter < 40) {
+				return;
+			} else {
+				stallspeed = 140;
+			}
+		}	*/
 		if (radioaltimeter < 40) {
 			return;
-		} else {
-			stallspeed = 140;
-		}
-		
+		} 
 		
 		//Stall speed to low to be shown
-		if ((speed - stallspeed) > 50) 
+		//Log.d("Speed", String.format("%f %f",speed,stallspeed ));
+		
+		if ((speed - stallspeed) > 50) {
 			return;
+		}
 		
 		//Stall speed to high to be shown
 		if ((stallspeed - speed) > 70) 
@@ -408,7 +374,8 @@ public class PlaneA330 {
 		int offsetx = centerx - (int)(267*scaleFactor); //Border
 		final float verticalPitchScale = (float) (75./20); // 75pixels/20 kts = 3.75 pixels/kts
 		
-		
+		/*
+		if (selectedPlane == A330) {
 		 
 			maxspeed = 330; //No flaps
 			if (flaps >= 0.28)
@@ -419,6 +386,15 @@ public class PlaneA330 {
 				maxspeed = 200;
 			if (flaps >= 1)
 				maxspeed = 185;	
+		}
+			*/	
+		
+		if (maxspeed > 1.0 || maxspeed < -1.0)
+			return;
+		
+		//Convert max speed to kts 
+		maxspeed = speed + maxspeed*70; 
+		
 		
 		//Max speed too high to be shown
 		if ((maxspeed - speed) > 55) 
@@ -471,6 +447,9 @@ public class PlaneA330 {
 		y1 = centery;
 		y2 = centery;
 		
+		//recalculate verticalSpeed in fpm
+		verticalSpeed *= 60.;
+		
 		//Calculation of line deviation
 		if (verticalSpeed <= 2000 && verticalSpeed >= -2000) {
 			y2 = centery - (int)(verticalSpeed*scaleVs*scaleFactor);
@@ -502,35 +481,18 @@ public class PlaneA330 {
 		paint.setStrokeWidth((int)(3*scaleFactor));
 		
 		//Draw VS indicator line
-		paint.setColor(Color.GREEN);
 		canvas.drawLine(x1, y1, x2, y2, paint);
 		
-		//Dra2 Textbox and text
-		int x3 = centerx + (int)(460*scaleFactor);
-		int squaresize = (int)(15*scaleFactor);
-				
-		int auxvs = (int)((Math.abs(verticalSpeed)/1000)*10);
-		String vspeed;
-		if (auxvs < 10) {
-			vspeed = String.format("0%d", auxvs);
-		} else {
-			vspeed = String.format("%d", auxvs);
-		}
-			
-		if (verticalSpeed > 200){	
-			y2 -= (int)(7*scaleFactor);
-			paint.setColor(Color.BLACK);
-			canvas.drawRect(x3 - squaresize, y2 - 2*squaresize + (int)(6*scaleFactor), x3 + 2*squaresize, y2+(int)(6*scaleFactor), paint);
-			paint.setColor(Color.GREEN);
-			canvas.drawText(vspeed, x3, y2, paint);		
-		} else if (verticalSpeed < -200) {
-			y2 += (int)(26*scaleFactor);
-			paint.setColor(Color.BLACK);
-			canvas.drawRect(x3 - squaresize, y2 - 2*squaresize + (int)(6*scaleFactor), x3 + 2*squaresize, y2+(int)(6*scaleFactor), paint);
-			paint.setColor(Color.GREEN);
-			canvas.drawText(vspeed, x3+(int)(5*scaleFactor), y2, paint);			
-		}
+		//Draw VS text
+		int auxvs = (int)(Math.abs(verticalSpeed)/100)*100;
+		String vspeed = String.format("%d", auxvs);
+		int x3 = centerx + (int)(440*scaleFactor);
 		
+		if (verticalSpeed > 400) {		
+			canvas.drawText(vspeed, x3, (centery - (int)(210*scaleFactor)), paint);
+		} else if (verticalSpeed < -400) {
+			canvas.drawText(vspeed, x3, (centery + (int)(220*scaleFactor)), paint);
+		}
 	}
 	
 	void drawLocalizer(Canvas canvas, Paint paint)
@@ -552,9 +514,9 @@ public class PlaneA330 {
 		paint.setStrokeWidth((int)(3*scaleFactor));
 		
 		//Draw center line line
-		canvas.drawLine(centerx, centery + (int)(250.*scaleFactor), centerx, centery + (int)(275.*scaleFactor), paint);
+		canvas.drawLine(centerx, centery + (int)(230.*scaleFactor), centerx, centery + (int)(255.*scaleFactor), paint);
 				
-		int y2 = centery + (int)(260*scaleFactor);  
+		int y2 = centery + (int)(240*scaleFactor);  
 		
 		if (headingLoc >= -0.33 && headingLoc <= 0.33) {
 			
@@ -668,10 +630,10 @@ public class PlaneA330 {
 		//Paint paint = new Paint();
 		//paint.setAntiAlias(true);
 		//paint.setDither(true);
-		paint.setColor(Color.rgb(168, 88, 15));
+		paint.setColor(Color.BLACK);
 		canvas.drawRect(centerx - (int)(50*scaleFactor), centery + (int)(180*scaleFactor) , centerx + (int)(50*scaleFactor), centery + (int)(220*scaleFactor), paint);
 		
-		paint.setColor(Color.YELLOW);
+		paint.setColor(Color.WHITE);
 		paint.setTextSize(35*scaleFactor);	
 		paint.setStrokeWidth((int)(3*scaleFactor));
 		paint.setTextAlign(Align.CENTER);
@@ -707,13 +669,33 @@ public class PlaneA330 {
 		
 		paint.setTextSize(30*scaleFactor);
 				
-		//Pitch Mode		
+		//Pitch Mode	
+		if (pitchMode.equals("vertical-speed-hold")) {
+			pitchMode = "V/S";
+		} else if (pitchMode.equals("altitude-hold")) {
+			pitchMode = "ALT";
+		}
+		
 		canvas.drawText(pitchMode, centerx + (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
 		
 		//Roll Mode
+		if (rollMode.equals("wing-leveler")) {
+			rollMode = "HDG HOLD";
+		} else if (rollMode.equals("nav1-hold")) {
+			rollMode = "LNAV";
+		} else if (rollMode.equals("dg-heading-hold")) {
+			rollMode = "HDG SEL";
+		}
+		
 		canvas.drawText(rollMode, centerx, centery - (int)(320*scaleFactor), paint);
 		
 		//Speed Mode
+		if (speedMode.equals("speed-with-throttle-ias")) {
+			speedMode = "SPD";
+		} else if (speedMode.equals("speed-with-pitch-trim")) {
+			speedMode = "THR";
+		}
+		
 		canvas.drawText(speedMode, centerx - (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
 	}
 	
@@ -725,7 +707,7 @@ public class PlaneA330 {
 		
 		//Selected AP Altitude 
 		offsetx = centerx + (int)(330*scaleFactor); //Border
-		paint.setColor(Color.CYAN);
+		paint.setColor(Color.MAGENTA);
 		paint.setTextSize(35*scaleFactor);
 		paint.setTextAlign(Align.CENTER);
 				
@@ -764,7 +746,7 @@ public class PlaneA330 {
 			apspeed = speed - 65;
 		}
 		
-		offsetx = centerx - (int)(260*scaleFactor); //Border
+		offsetx = centerx - (int)(270*scaleFactor); //Border
 		offsety = centery - (int)((apspeed - speed)*verticalPitchScaleSpeed*scaleFactor);
 		
 		apspeedindMatrix.reset();
@@ -775,140 +757,48 @@ public class PlaneA330 {
 		canvas.drawBitmap(apspeedind, apspeedindMatrix, paint);
 		
 		//AP Heading Text
-		//offsetx = centerx - (int)(50*scaleFactor);
-		//offsety = centery + (int)(360*scaleFactor);
-		//paint.setTextSize(30*scaleFactor);
+		offsetx = centerx - (int)(50*scaleFactor);
+		offsety = centery + (int)(360*scaleFactor);
+		paint.setTextSize(30*scaleFactor);
 		
-		//if (apheading < 10) {
-		//	canvas.drawText(String.format("00%dH",apheading), offsetx, offsety, paint);
-		//} else if (apheading < 100) {
-		//	canvas.drawText(String.format("0%dH",apheading), offsetx, offsety, paint);
-		//} else {
-		//	canvas.drawText(String.format("%dH",apheading), offsetx, offsety, paint);
-		//}
-				
+		if (apheading < 10) {
+			canvas.drawText(String.format("00%dH",apheading), offsetx, offsety, paint);
+		} else if (apheading < 100) {
+			canvas.drawText(String.format("0%dH",apheading), offsetx, offsety, paint);
+		} else {
+			canvas.drawText(String.format("%dH",apheading), offsetx, offsety, paint);
+		}
+		
+		
 		//AP Heading indicator
-		//float rotation = heading - (float)(apheading);
+		float rotation = heading - (float)(apheading);
 		
 		apheadMatrix.reset();
 		apheadMatrix.postTranslate(-aphead.getWidth()/2, -aphead.getHeight()/2);
 		apheadMatrix.postScale(scaleFactor, scaleFactor);
 		apheadMatrix.postTranslate(0, -(280*scaleFactor));
+		apheadMatrix.postRotate(-rotation);
+		
+		apheadMatrix.postTranslate(centerx,centery + (int)(548*scaleFactor));
 		
 		
-		offsety = centery + (int)(280*scaleFactor);		
-		final float headingPitchScale = (float) (100./10); // 100pixels/10 degees = 10 pixels/degree
-		float aux_apheading, aux_heading;
-		
-		//manipulation of angles within the visible region
-		aux_apheading = apheading;
-		aux_heading = heading;
-				
-		if( (heading < 30) && (aux_apheading > 330)) {
-			aux_apheading -= 360;
-			//heading = -360 + heading;
-		} else if ((heading > 330) && (aux_apheading < 30)) {
-			//aux_apheading = -360 + aux_apheading;
-			aux_heading -= 360;
-		}
-				
-		float aux = aux_apheading - aux_heading;	
-		
-		//Calculation of closets side from heading to apheading
-		float aux2 = apheading - heading;	
-		boolean flag = false;
-		if (aux2 >= 0) {
-			//positive
-			if (aux2 >= 180) {
-				flag = false; // Left
-			} else {
-				flag = true; //right
-			}
-			
-		} else {
-			//negative
-			if (aux2 >= -180) {
-				flag = false; //left
-			} else {
-				flag = true; //right
-			}				
-		}
-		
-		
-		if (Math.abs(aux) <= 25) { 
-			//Heading bug indicator visible
-			offsetx = centerx + (int)((aux)*headingPitchScale*scaleFactor);
-			
-			apheadMatrix.reset();
-			apheadMatrix.postTranslate(-aphead.getWidth()/2, -aphead.getHeight()/2);
-			apheadMatrix.postScale(scaleFactor, scaleFactor);
-			apheadMatrix.postTranslate(offsetx,offsety);
-			canvas.drawBitmap(aphead, apheadMatrix, paint);
-		
-		} else if (flag) {
-			//Right TEXT
-			offsetx = centerx + (int)(250*scaleFactor);
-			offsety = centery + (int)(350*scaleFactor);
-		
-			paint.setStyle(Paint.Style.FILL);
-			paint.setColor(Color.BLACK);	
-			canvas.drawRect(offsetx - (int)(35*scaleFactor),offsety - (int)(30*scaleFactor),offsetx + (int)(35*scaleFactor),offsety + (int)(5*scaleFactor),  paint);
-			paint.setStyle(Paint.Style.STROKE);
-			paint.setColor(Color.WHITE);
-			canvas.drawRect(offsetx - (int)(35*scaleFactor),offsety - (int)(30*scaleFactor),offsetx + (int)(35*scaleFactor),offsety + (int)(5*scaleFactor),  paint);
-			
-			paint.setStyle(Paint.Style.FILL);
-			paint.setColor(Color.CYAN);
-			
-			if (apheading < 10) {
-				canvas.drawText(String.format("00%d",apheading), offsetx, offsety, paint);
-			} else if (apheading < 100) {
-				canvas.drawText(String.format("0%d",apheading), offsetx, offsety, paint);
-			} else {
-				canvas.drawText(String.format("%d",apheading), offsetx, offsety, paint);
-			}
-			
-		} else  {
-			//Left TEXT
-			offsetx = centerx - (int)(250*scaleFactor);
-			offsety = centery + (int)(350*scaleFactor);
-		
-			paint.setStyle(Paint.Style.FILL);
-			paint.setColor(Color.BLACK);	
-			canvas.drawRect(offsetx - (int)(35*scaleFactor),offsety - (int)(30*scaleFactor),offsetx + (int)(35*scaleFactor),offsety + (int)(5*scaleFactor),  paint);
-			paint.setStyle(Paint.Style.STROKE);
-			paint.setColor(Color.WHITE);
-			canvas.drawRect(offsetx - (int)(35*scaleFactor),offsety - (int)(30*scaleFactor),offsetx + (int)(35*scaleFactor),offsety + (int)(5*scaleFactor),  paint);
-			
-			paint.setStyle(Paint.Style.FILL);
-			paint.setColor(Color.CYAN);
-			
-			if (apheading < 10) {
-				canvas.drawText(String.format("00%d",apheading), offsetx, offsety, paint);
-			} else if (apheading < 100) {
-				canvas.drawText(String.format("0%d",apheading), offsetx, offsety, paint);
-			} else {
-				canvas.drawText(String.format("%d",apheading), offsetx, offsety, paint);
-			}
-			
-		}
+		canvas.drawBitmap(aphead, apheadMatrix, paint);
 			
 	}
 	
 	void drawDME(Canvas canvas, Paint paint)
 	{
 		paint.setStyle(Paint.Style.FILL);
-		paint.setColor(Color.MAGENTA);		
+		paint.setColor(Color.WHITE);		
 		paint.setTextSize(30*scaleFactor);
 		
 		if (dmeinrange == false)
 			return;
 		
-		// Convert from meters to nautical miles
+		//Change dme from meters to nautical miles
 		dme /= 1852.;
-				
-		canvas.drawText(String.format("DME"), centerx - (int)(350*scaleFactor), centery + (int)(320*scaleFactor), paint);
-		canvas.drawText(String.format("%3.1fNM", dme ), centerx - (int)(350*scaleFactor), centery + (int)(350*scaleFactor), paint);
+		
+		canvas.drawText(String.format("DME %3.1f", dme ), centerx - (int)(170*scaleFactor), centery - (int)(240*scaleFactor), paint);
 		
 	}
 	

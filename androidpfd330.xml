@@ -184,6 +184,7 @@
     <node>/autopilot/settings/heading-bug-deg</node>
    </chunk>
 
+<!--
    <chunk>
     <name>DME in range</name>
     <type>bool</type>
@@ -195,6 +196,20 @@
     <type>float</type>
     <format>%f</format>
     <node>/instrumentation/dme/indicated-distance-nm</node>
+   </chunk>
+-->
+
+   <chunk>
+    <name>DME in range</name>
+    <type>bool</type>
+    <node>/instrumentation/nav/in-range</node>
+   </chunk>
+
+   <chunk>
+    <name>DME</name>
+    <type>float</type>
+    <format>%f</format>
+    <node>/instrumentation/nav/nav-distance</node>
    </chunk>
 
   </output>

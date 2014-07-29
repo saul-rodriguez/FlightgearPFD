@@ -758,6 +758,8 @@ public class Plane777 {
 		if (dmeinrange == false)
 			return;
 		
+		// Convert from meters to nautical miles
+		dme /= 1852.;
 		canvas.drawText(String.format("DME %3.1f", dme ), centerx - (int)(170*scaleFactor), centery - (int)(240*scaleFactor), paint);
 		
 	}

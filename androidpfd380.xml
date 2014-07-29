@@ -129,7 +129,7 @@
     <node>/instrumentation/afds/max-airspeed-kts</node>
    </chunk>
 
-<chunk>
+   <chunk>
     <name>autopilot anunciator</name>
     <type>string</type>
     <format>%s</format>
@@ -140,21 +140,21 @@
     <name>pitch mode</name>
     <type>string</type>
     <format>%s</format>
-    <node>/instrumentation/afds/ap-modes/pitch-mode</node>
+    <node>/autopilot/locks/altitude</node>
    </chunk>
 
    <chunk>
     <name>roll mode</name>
     <type>string</type>
     <format>%s</format>
-    <node>/instrumentation/afds/ap-modes/roll-mode</node>
+    <node>/autopilot/locks/heading</node>
    </chunk>
 
    <chunk>
     <name>speed mode</name>
     <type>string</type>
     <format>%s</format>
-    <node>/instrumentation/afds/ap-modes/speed-mode</node>
+    <node>/autopilot/locks/speed</node>
    </chunk>
 
    <chunk>
@@ -185,7 +185,7 @@
    </chunk>
 
 <!--
-  <chunk>
+   <chunk>
     <name>DME in range</name>
     <type>bool</type>
     <node>/instrumentation/dme/in-range</node>

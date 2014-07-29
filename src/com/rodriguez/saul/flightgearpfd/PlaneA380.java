@@ -11,7 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
 
-public class PlaneA330 {
+public class PlaneA380 {
 	public int centerx;
 	public int centery;
 	public float scaleFactor;
@@ -69,7 +69,7 @@ public class PlaneA330 {
 	
 	Context mContext;
 	
-	public PlaneA330(Context context) {
+	public PlaneA380(Context context) {
 		
 		//Set the context from tje Activity
 		mContext = context;
@@ -707,14 +707,35 @@ public class PlaneA330 {
 		
 		paint.setTextSize(30*scaleFactor);
 				
-		//Pitch Mode		
-		canvas.drawText(pitchMode, centerx + (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
+		//Pitch Mode	
+		if (pitchMode.equals("vertical-speed-hold")) {
+			pitchMode = "V/S";
+		} else if (pitchMode.equals("altitude-hold")) {
+			pitchMode = "ALT";
+		} else if (pitchMode.equals("gs1-hold")) {
+			pitchMode = "G/S";
+		}
+		
+		canvas.drawText(pitchMode, centerx , centery - (int)(320*scaleFactor), paint);
 		
 		//Roll Mode
-		canvas.drawText(rollMode, centerx, centery - (int)(320*scaleFactor), paint);
+		if (rollMode.equals("wing-leveler")) {
+			rollMode = "HDG HOLD";
+		} else if (rollMode.equals("nav1-hold")) {
+			rollMode = "LOC";
+		} else if (rollMode.equals("dg-heading-hold")) {
+			rollMode = "HDG";
+		}
+		canvas.drawText(rollMode, centerx + (int)(165*scaleFactor) , centery - (int)(320*scaleFactor), paint);
 		
 		//Speed Mode
-		canvas.drawText(speedMode, centerx - (int)(165*scaleFactor), centery - (int)(320*scaleFactor), paint);
+		if (speedMode.equals("speed-with-throttle")) {
+			speedMode = "A/THR";
+		} else if (speedMode.equals("speed-with-pitch-trim")) {
+			speedMode = "THR";
+		}
+		paint.setColor(Color.WHITE);
+		canvas.drawText(speedMode, centerx + (int)(350*scaleFactor), centery - (int)(320*scaleFactor), paint);
 	}
 	
 	void drawAPsettings(Canvas canvas, Paint paint)

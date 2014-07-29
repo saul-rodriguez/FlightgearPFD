@@ -46,13 +46,15 @@ public class MainActivity extends Activity {
 	private static final String MLOG = "MAINACTIVITY";
 	
 	public final static String MESS_PORT = "MESSPORT";
-	
+		
 	public static final int B777 = 1;
 	public static final int B787 = 2;
 	public static final int A330 = 3;
 	public static final int FREE = 4;
+	public static final int B747 = 5;
+	public static final int A380 = 6;
 	
-	int plane = FREE;
+	int plane = B777;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +122,10 @@ public class MainActivity extends Activity {
 			text += "1 Download the protocol file androidpfd330.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
 		} else if (plane == FREE) {
 			text += "1 Download the files androidpfd777.xml and  androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		} else if (plane == B747) {
+			text += "1 Download the protocol file androidpfd747.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
+		} else if (plane == A380) {
+			text += "1 Download the protocol file androidpfd380.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
 		}
 				
 		text += "2 Copy these files in the directory $FG_ROOT/Protocol/\n";

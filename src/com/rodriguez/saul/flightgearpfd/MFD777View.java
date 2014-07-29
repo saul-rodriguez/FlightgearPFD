@@ -43,13 +43,17 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	public static final int B787 = 2;
 	public static final int A330 = 3;
 	public static final int FREE = 4;
+	public static final int B747 = 5;
+	public static final int A380 = 6;
 	
 	//int selectedPlane = B777;
 	
-	//Plane777 plane;
+	Plane777 plane;
 	//Plane787 plane;
 	//PlaneA330 plane;
-	PlaneFree plane;
+	//PlaneA380 plane;
+	//PlaneFree plane;
+	//Plane747 plane;
 	
 	int mwidth;
 	int mheight;	
@@ -109,10 +113,12 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		//plane = new Plane777(context);
+		//plane = new Plane747(context);
+		plane = new Plane777(context);
 		//plane = new Plane787(context);
-		plane = new PlaneFree(context);
+		//plane = new PlaneFree(context);
 		//plane = new PlaneA330(context);
+		//plane = new PlaneA380(context);
 		
 		
 		// TODO Auto-generated constructor stub
