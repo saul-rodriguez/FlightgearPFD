@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 	public static final int B747 = 5;
 	public static final int A380 = 6;
 	
-	int plane = B777;
+	int plane = B787;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
 		text += "[Frequency] = Refresh rate in Hz\n";
 		text += "[IP android] = The IP address of this device: " +  ip + " \n";
 		text += "[port] = Port number (must match field PORT NUMBER entered above)\n";
-		text += "[protocol filename  without .xml] = either androidpfd777 or  androidpfd787\n\n";
+		text += "[protocol filename  without .xml] =  androidpfd777, androidpfd787, androidpfd330, androidpfd747\n\n";
 		text += "Example:\n";
 		text += "fgfs --generic=socket,out,20,"+ ip +",5502,udp,androidpfd777\n";
 		text += "5 Wait until flightgear finishes to start (cockpit visible), and click “Connect” in the android device.\n\n";
