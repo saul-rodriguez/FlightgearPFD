@@ -39,8 +39,7 @@ public class Plane {
 	float dme; // dme distance
 	
 	public Bitmap mask = null;
-	
-	
+		
 	
 	public void draw(Canvas canvas) {
 		

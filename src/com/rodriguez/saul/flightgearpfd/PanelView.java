@@ -39,9 +39,12 @@ import android.widget.Toast;
 public class PanelView extends Activity {
 
 	//Communications related members
-	private int udpPort;
+	private int udpPort;	
 	private UDPReceiver udpReceiver = null;
 	public static final int SOCKET_TIMEOUT = 10000;
+	
+	//Selected plane
+	private int selPlane;
 	
 	MFD777View mMFD777;
 	
@@ -64,10 +67,12 @@ public class PanelView extends Activity {
 		
 		// Get the configuration via intent
 		Intent intent = getIntent();				
-		udpPort = intent.getIntExtra(MainActivity.MESS_PORT, 5502);
+		udpPort = intent.getIntExtra(MainActivity.MESS_PORT, 5502);		
+		selPlane = intent.getIntExtra(MainActivity.SELECTED_PLANE, 0);
 		
 		//Attach the custom view to a MFD777 object
 		mMFD777 = (MFD777View)findViewById(R.id.myFDMView);
+		mMFD777.setPlane(selPlane);
 				
 		Log.d(MLOG,"Port: " + String.format("%d", udpPort));
 	}

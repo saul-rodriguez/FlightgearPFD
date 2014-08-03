@@ -38,23 +38,18 @@ import android.view.SurfaceView;
 public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 
 	private SurfaceHolder surfaceHolder;
+	Context mcontext;
+		
 	
+	public static final int BASIC = 0;
 	public static final int B777 = 1;
 	public static final int B787 = 2;
-	public static final int A330 = 3;
-	public static final int BASIC = 4;
-	public static final int B747 = 5;
-	public static final int A380 = 6;
-	
-	//int selectedPlane = B777;
+	public static final int B747 = 3;
+	public static final int A330 = 4;	
+	public static final int A380 = 5;
+		
 	Plane plane;
-	
-	//Plane777 plane;
-	//Plane787 plane;
-	//PlaneA330 plane;
-	//PlaneA380 plane;
-	//PlaneFree plane;
-	//Plane747 plane;
+	int planeType;
 	
 	int mwidth;
 	int mheight;	
@@ -65,15 +60,9 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public MFD777View(Context context, AttributeSet attrs) {
 		super(context, attrs);
+				
 		
-		//plane = new Plane747(context);
-		//plane = new Plane777(context);
-		//plane = new Plane787(context);
-		//plane = new PlaneFree(context);
-		//plane = new PlaneA330(context);
-		plane = new PlaneA380(context);
-		
-		
+		mcontext = context;
 		// TODO Auto-generated constructor stub
 		surfaceHolder = this.getHolder();
 		surfaceHolder.addCallback(this);
@@ -141,6 +130,40 @@ public class MFD777View extends SurfaceView implements SurfaceHolder.Callback {
 	
 	
 	//Setters
+	void setPlane(int planetype) 
+	{
+		planeType = planetype;
+		//Log.d("SELECTED PLANE",String.format("%d",planeType));
+		
+		switch (planeType) {
+			case BASIC: 
+						plane = new PlaneFree(mcontext);
+						break;
+			case B777:  
+						plane = new Plane777(mcontext);
+						break;
+			case B787:  
+						plane = new Plane787(mcontext);
+						break;
+			case B747:  
+						plane = new Plane747(mcontext);
+						break;
+						
+			case A330:  
+						plane = new PlaneA330(mcontext);
+						break;
+						
+			case A380:  
+						plane = new PlaneA380(mcontext);
+						break;
+			default:	
+						plane = new PlaneFree(mcontext);
+						break;
+						
+			
+		}
+	}
+	
 	void SetSpeed(float newSpeed) 
 	{
 		plane.speed = newSpeed;

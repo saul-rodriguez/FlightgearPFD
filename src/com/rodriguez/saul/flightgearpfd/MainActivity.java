@@ -19,6 +19,9 @@
 package com.rodriguez.saul.flightgearpfd;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,7 +35,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,18 +46,21 @@ public class MainActivity extends Activity {
 	private EditText port;
 	private int m_port;
 	private TextView instructions;
+	
+	private Spinner spinner1;
 		
 	//Debug constant
 	private static final String MLOG = "MAINACTIVITY";
 	
 	public final static String MESS_PORT = "MESSPORT";
+	public final static String SELECTED_PLANE = "SELECTEDPLANE";
 		
+	public static final int BASIC = 0;
 	public static final int B777 = 1;
 	public static final int B787 = 2;
-	public static final int A330 = 3;
-	public static final int FREE = 4;
-	public static final int B747 = 5;
-	public static final int A380 = 6;
+	public static final int B747 = 3;
+	public static final int A330 = 4;	
+	public static final int A380 = 5;
 	
 	int plane = B787;
 	
@@ -71,6 +79,22 @@ public class MainActivity extends Activity {
 		m_port = 5502;
 		port.setText(String.format("%d", m_port));
 		
+		//SetupSpinner
+		spinner1 = (Spinner)findViewById(R.id.spinner1);
+		
+		List<String> list = new ArrayList<String>();
+		list.add("BASIC");
+		list.add("Boeing 777");
+		list.add("Boeing 787-8");
+		list.add("Boeing 747-400");
+		list.add("Airbus 330");
+		list.add("Airbus 380");
+		
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner1.setAdapter(dataAdapter);
+		
+		
 		//instructions.setText();
 		ShowInstructions();
 		
@@ -88,10 +112,16 @@ public class MainActivity extends Activity {
 				
 		Log.d(MLOG, "Sending intent port: " + String.format("%d", m_port));
 		
+		//Check Selected Plane:
+		
+		int selplane = spinner1.getSelectedItemPosition();
+		//Log.d("SELECTED PLANE",String.format("%d",selplane));
+		
 		Intent intent = new Intent(this, PanelView.class);
 		
 		//String message = "Hola";
 		intent.putExtra(MESS_PORT,m_port);		
+		intent.putExtra(SELECTED_PLANE, selplane);
 				
 		startActivity(intent);	
 	}
@@ -111,8 +141,8 @@ public class MainActivity extends Activity {
 		
 		instructions.setTextSize(18);
 		String text;
-		text = "Version 0.1";
-		text += "\nINSTRUCTIONS \n\n";
+		
+		text = "\nINSTRUCTIONS \n\n";
 		
 		if (plane == B777) {
 			text += "1 Download the protocol file androidpfd777.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
@@ -120,7 +150,7 @@ public class MainActivity extends Activity {
 			text += "1 Download the protocol file androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
 		} else if (plane == A330) {
 			text += "1 Download the protocol file androidpfd330.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == FREE) {
+		} else if (plane == BASIC) {
 			text += "1 Download the files androidpfd777.xml and  androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
 		} else if (plane == B747) {
 			text += "1 Download the protocol file androidpfd747.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
