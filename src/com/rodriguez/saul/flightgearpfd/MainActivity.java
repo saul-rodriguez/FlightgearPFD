@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 	public static final int A330 = 4;	
 	public static final int A380 = 5;
 	
-	int plane = B787;
+	//int plane = B787;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,27 +144,14 @@ public class MainActivity extends Activity {
 		
 		text = "\nINSTRUCTIONS \n\n";
 		
-		if (plane == B777) {
-			text += "1 Download the protocol file androidpfd777.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == B787) {
-			text += "1 Download the protocol file androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == A330) {
-			text += "1 Download the protocol file androidpfd330.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == BASIC) {
-			text += "1 Download the files androidpfd777.xml and  androidpfd787.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == B747) {
-			text += "1 Download the protocol file androidpfd747.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		} else if (plane == A380) {
-			text += "1 Download the protocol file androidpfd380.xml from: https://github.com/saul-rodriguez/FlightgearPFD\n";
-		}
-				
+		text += "1 Download the protocol files from: https://sites.google.com/site/flightgearandroid/flightgear-pfd\n";
 		text += "2 Copy these files in the directory $FG_ROOT/Protocol/\n";
 		text += "3 Enable WiFi in your android device\n";
 		text += "4 Launch flightgear with the option: --generic=socket,out,[Frequency],[IP android],[port],udp,[protocol filename] where:\n";
 		text += "[Frequency] = Refresh rate in Hz\n";
 		text += "[IP android] = The IP address of this device: " +  ip + " \n";
 		text += "[port] = Port number (must match field PORT NUMBER entered above)\n";
-		text += "[protocol filename  without .xml] =  androidpfd777, androidpfd787, androidpfd330, androidpfd747\n\n";
+		text += "[protocol filename  without .xml] =  androidpfd777, androidpfd787, androidpfd330, androidpfd330, androidpfd747\n\n";
 		text += "Example:\n";
 		text += "fgfs --generic=socket,out,20,"+ ip +",5502,udp,androidpfd777\n";
 		text += "5 Wait until flightgear finishes to start (cockpit visible), and click “Connect” in the android device.\n\n";
