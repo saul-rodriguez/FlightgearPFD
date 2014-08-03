@@ -12,7 +12,8 @@ import android.graphics.Paint.Align;
 import android.util.AttributeSet;
 import android.util.Log;
 
-public class Plane747 {
+public class Plane747 extends Plane {
+	/*
 	public int centerx;
 	public int centery;
 	public float scaleFactor;
@@ -47,6 +48,7 @@ public class Plane747 {
 	float dme; // dme distance
 	
 	public Bitmap mask = null;
+	*/
 	Bitmap horizont = null;
 	Bitmap vs = null;
 	Bitmap marks = null;	

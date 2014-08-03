@@ -14,7 +14,8 @@ import android.graphics.Paint.Align;
 import android.graphics.Path;
 import android.util.Log;
 
-public class Plane787 {
+public class Plane787 extends Plane {
+	/*
 	public int centerx;
 	public int centery;
 	public float scaleFactor;
@@ -48,7 +49,8 @@ public class Plane787 {
 	boolean dmeinrange; // is DME in range ?
 	float dme; // dme distance
 	
-	Bitmap mask = null;
+	Bitmap mask = null; */
+	
 	Bitmap horizont = null;
 	Bitmap vs = null;
 	Bitmap marks = null;	

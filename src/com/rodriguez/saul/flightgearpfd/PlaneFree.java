@@ -10,7 +10,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 
-public class PlaneFree {
+public class PlaneFree extends Plane {
+	/*
 	public int centerx;
 	public int centery;
 	public float scaleFactor;
@@ -45,7 +46,8 @@ public class PlaneFree {
 	float dme; // dme distance
 	
 	
-	public Bitmap mask = null;
+	public Bitmap mask = null; */
+	
 	Bitmap horizont = null;
 	Bitmap vs = null;
 	Bitmap marks = null;	
